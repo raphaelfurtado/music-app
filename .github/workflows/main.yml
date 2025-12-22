@@ -1,31 +1,39 @@
-on: 
-    push: 
-        branches:
-            - main  
-name: 🚀 Deploy website on push
+name: 🚀 Full Deploy
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   web-deploy:
-    name: 🎉 Deploy Server
+    name: 🎉 Deploy Application
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
-    
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      # Passo 1: Envia a aplicação (backend)
+      - name: 📂 Deploy App Files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          # Exclui a pasta public, git, testes, etc
           exclude: |
             public/**
-            vendor/**
-            public/storage/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
             tests/**
             .git/**
             .github/**
-            .gitignore
           server-dir: repertorio-app/
+
+      # Passo 2: Envia a pasta public (frontend)
+      - name: 📂 Deploy Public Folder
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: public/
+          server-dir: repertorio.websiteponto.com.br/
