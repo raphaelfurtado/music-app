@@ -1,4 +1,4 @@
-name: 🚀 Deploy Completo (FTP + SSH Migrations)
+name: 🚀 Deploy Completo (Backend + Frontend Separados)
 
 on:
   push:
@@ -15,14 +15,14 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      # 2. Configura o PHP (no GitHub Actions)
+      # 2. Configura o PHP
       - name: 🐘 Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, intl, pdo_mysql
 
-      # 3. Cache do Composer (Acelera o deploy)
+      # 3. Cache do Composer
       - name: 💾 Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3
@@ -37,7 +37,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress
 
       # ----------------------------------------------------------------
-      # PARTE 1: Envia o BACKEND (App, Vendor, Config) via FTP
+      # PARTE 1: Envia o BACKEND (App, Vendor, Config)
       # ----------------------------------------------------------------
       - name: 📂 Deploy Backend (App Core)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -45,8 +45,11 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          
+          # Destino: Pasta protegida do sistema
           server-dir: repertorio-app/
-          # Exclui a pasta public daqui (ela vai separada depois)
+          
+          # Exclui a pasta public daqui (pois ela vai para outro lugar no passo seguinte)
           exclude: |
             public/**
             .git*
@@ -57,7 +60,7 @@ jobs:
             /README.md
 
       # ----------------------------------------------------------------
-      # PARTE 2: Envia o FRONTEND (CSS/JS da pasta public) via FTP
+      # PARTE 2: Envia o FRONTEND (CSS, JS, Assets)
       # ----------------------------------------------------------------
       - name: 📂 Deploy Frontend (Public Folder)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -65,37 +68,22 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          
+          # Origem: Sua pasta public local
           local-dir: public/
+          
+          # Destino: Sua pasta pública no servidor (Subdomínio)
           server-dir: repertorio.websiteponto.com.br/
+          
+          # IMPORTANTE: 
+          # Geralmente excluímos o index.php se o do servidor já estiver 
+          # configurado com os caminhos corretos (../repertorio-app/...).
+          # Se o index.php do seu git já estiver certo, pode remover essa linha de exclude.
           exclude: |
             index.php
 
       # ----------------------------------------------------------------
-      # PARTE 3: Roda as Migrations via SSH
+      # PARTE 3: Roda as Migrations (Gatilho via URL)
       # ----------------------------------------------------------------
-      - name: 🚀 Run Migrations via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          # Usa as mesmas credenciais do FTP (geralmente funcionam para SSH)
-          host: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22 # Porta padrão do SSH (se for diferente, altere aqui)
-          
-          # O Script que será digitado no terminal do servidor
-          script: |
-            cd repertorio-app
-            
-            # (Opcional) Coloca em modo manutenção rápido
-            # php artisan down 
-
-            # Roda as migrations forçando produção
-            php artisan migrate --force
-            
-            # Limpa caches para evitar erros de config antiga
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            
-            # (Opcional) Volta o site
-            # php artisan up
+      - name: 🚀 Trigger Database Migrations
+        run: curl https://repertorio.websiteponto.com.br/rodar-migrations-secreto?key=123456

@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/rodar-migrations-secreto', function () {
+    // 1. Segurança: Verifica a senha que você colocou no YAML
+    if (request('key') !== '123456') {
+        abort(403, 'Acesso negado');
+    }
+
+    // 2. Tenta rodar a migration
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return 'Sucesso: ' . nl2br(Artisan::output());
+    } catch (\Exception $e) {
+        return 'Erro: ' . $e->getMessage();
+    }
+});
+
 // 1. PÁGINA INICIAL (Pública)
 // Essa rota carrega o arquivo 'resources/views/welcome.blade.php' (seu code 1.html)
 Route::get('/', function () {
