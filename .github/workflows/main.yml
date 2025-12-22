@@ -1,4 +1,4 @@
-name: 🚀 Deploy Laravel App (Backend)
+name: 🚀 Deploy Completo (FTP + SSH Migrations)
 
 on:
   push:
@@ -7,47 +7,95 @@ on:
 
 jobs:
   web-deploy:
-    name: 🎉 Deploy
+    name: 🎉 Deploy Production
     runs-on: ubuntu-latest
+    
     steps:
-      # 1. Baixa o código do repositório
+      # 1. Baixa o código
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      # 2. Instala o PHP (Necessário para rodar o composer)
+      # 2. Configura o PHP (no GitHub Actions)
       - name: 🐘 Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2' # Verifique se essa é a versão do seu servidor
+          php-version: '8.2'
           extensions: mbstring, intl, pdo_mysql
 
-      # 3. Roda o Composer para baixar as dependências (cria a pasta vendor)
+      # 3. Cache do Composer (Acelera o deploy)
+      - name: 💾 Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      # 4. Instala Dependências (Cria a pasta /vendor)
       - name: 📦 Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader --prefer-dist
+        run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress
 
-      - name: 📦 Install NPM Dependencies
-        run: npm ci
-
-      - name: 🚀 Build Assets
-        run: npm run build
-
-      # 4. Envia tudo para o FTP (Incluindo a pasta vendor agora!)
-      - name: 📂 Sync files
+      # ----------------------------------------------------------------
+      # PARTE 1: Envia o BACKEND (App, Vendor, Config) via FTP
+      # ----------------------------------------------------------------
+      - name: 📂 Deploy Backend (App Core)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # IMPORTANTE: Removi 'vendor/**' daqui para ele ser enviado
+          server-dir: repertorio-app/
+          # Exclui a pasta public daqui (ela vai separada depois)
           exclude: |
             public/**
-            storage/*.key
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
-            tests/**
-            .git/**
+            .git*
             .github/**
-            .gitignore
-            node_modules/**
-          server-dir: repertorio-app/
+            tests/**
+            storage/*.key
+            .env
+            /README.md
+
+      # ----------------------------------------------------------------
+      # PARTE 2: Envia o FRONTEND (CSS/JS da pasta public) via FTP
+      # ----------------------------------------------------------------
+      - name: 📂 Deploy Frontend (Public Folder)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: public/
+          server-dir: repertorio.websiteponto.com.br/
+          exclude: |
+            index.php
+
+      # ----------------------------------------------------------------
+      # PARTE 3: Roda as Migrations via SSH
+      # ----------------------------------------------------------------
+      - name: 🚀 Run Migrations via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          # Usa as mesmas credenciais do FTP (geralmente funcionam para SSH)
+          host: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22 # Porta padrão do SSH (se for diferente, altere aqui)
+          
+          # O Script que será digitado no terminal do servidor
+          script: |
+            cd repertorio-app
+            
+            # (Opcional) Coloca em modo manutenção rápido
+            # php artisan down 
+
+            # Roda as migrations forçando produção
+            php artisan migrate --force
+            
+            # Limpa caches para evitar erros de config antiga
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            
+            # (Opcional) Volta o site
+            # php artisan up
