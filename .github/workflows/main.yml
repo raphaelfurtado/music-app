@@ -1,4 +1,4 @@
-name: 🚀 Full Deploy
+name: 🚀 Deploy Laravel App (Backend)
 
 on:
   push:
@@ -7,33 +7,47 @@ on:
 
 jobs:
   web-deploy:
-    name: 🎉 Deploy Application
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
+      # 1. Baixa o código do repositório
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      # Passo 1: Envia a aplicação (backend)
-      - name: 📂 Deploy App Files
+      # 2. Instala o PHP (Necessário para rodar o composer)
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Verifique se essa é a versão do seu servidor
+          extensions: mbstring, intl, pdo_mysql
+
+      # 3. Roda o Composer para baixar as dependências (cria a pasta vendor)
+      - name: 📦 Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --prefer-dist
+
+      - name: 📦 Install NPM Dependencies
+        run: npm ci
+
+      - name: 🚀 Build Assets
+        run: npm run build
+
+      # 4. Envia tudo para o FTP (Incluindo a pasta vendor agora!)
+      - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Exclui a pasta public, git, testes, etc
+          # IMPORTANTE: Removi 'vendor/**' daqui para ele ser enviado
           exclude: |
             public/**
+            storage/*.key
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/views/**
             tests/**
             .git/**
             .github/**
+            .gitignore
+            node_modules/**
           server-dir: repertorio-app/
-
-      # Passo 2: Envia a pasta public (frontend)
-      - name: 📂 Deploy Public Folder
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: public/
-          server-dir: repertorio.websiteponto.com.br/
