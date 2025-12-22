@@ -7,6 +7,18 @@ use Illuminate\Http\Request;
 
 class SongController extends Controller
 {
+
+    // App\Http\Controllers\SongController.php
+
+    public function index()
+    {
+        // Pega todas as músicas do usuário logado
+        $songs = Song::where('user_id', auth()->id())->orderBy('title')->get();
+
+        // Você precisará criar essa view: resources/views/songs/index.blade.php
+        return view('songs.index', compact('songs'));
+    }
+
     // Mostrar formulário de criar
     public function create(Request $request)
     {

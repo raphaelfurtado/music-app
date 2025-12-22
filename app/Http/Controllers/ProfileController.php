@@ -11,6 +11,12 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    
+    public function index()
+    {
+        // Retorna a view que criamos em resources/views/profile/index.blade.php
+        return view('profile.index');
+    }
     /**
      * Display the user's profile form.
      */
