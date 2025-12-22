@@ -1,0 +1,31 @@
+on: 
+    push: 
+        branches:
+            - main  
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy Server
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+    
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          exclude: |
+            public/**
+            vendor/**
+            public/storage/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/views/**
+            tests/**
+            .git/**
+            .github/**
+            .gitignore
+          server-dir: repertorio-app/
