@@ -57,6 +57,8 @@ class EditBlock extends Component
         if (request()->has('new_song_id')) {
             $this->addSong(request('new_song_id'));
         }
+
+        $this->loadSongs();
     }
 
     public function goToCreateSong($searchTitle)
@@ -96,15 +98,29 @@ class EditBlock extends Component
         $this->addedSongs = array_values($this->addedSongs);
     }
 
-    public function updateBlockOrder($list)
+    public function updateBlockOrder($items)
     {
-        $ordered = [];
-        foreach ($list as $item) {
-            $found = collect($this->addedSongs)->firstWhere('id', $item['value']);
-            if ($found)
-                $ordered[] = $found;
+        // $items é um array enviado automaticamente pelo Livewire contendo:
+        // [['value' => id_da_musica, 'order' => 1], ['value' => id_outra, 'order' => 2]]
+
+        foreach ($items as $item) {
+            // Atualiza a tabela pivô (block_song)
+            $this->block->songs()->updateExistingPivot($item['value'], [
+                'order' => $item['order']
+            ]);
         }
-        $this->addedSongs = $ordered;
+
+        // Recarrega a lista para garantir que a visualização bata com o banco
+        $this->loadSongs();
+    }
+
+    public function loadSongs()
+    {
+        // O segredo está no ->orderByPivot('order')
+        $this->addedSongs = $this->block->songs()
+            ->orderByPivot('order', 'asc')
+            ->get()
+            ->toArray(); // Ou mantenha como collection se preferir
     }
 
     public function selectKey($key)
