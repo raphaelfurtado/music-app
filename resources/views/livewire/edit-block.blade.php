@@ -16,10 +16,10 @@
         <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4">
             @foreach($keys as $k)
                     <button type="button" wire:click="selectKey('{{ $k['key'] }}')" class="flex flex-col items-center justify-center shrink-0 w-14 h-14 rounded-2xl transition-all active:scale-95
-                                            {{ $predominant_key === $k['key']
+                                                    {{ $predominant_key === $k['key']
                 ? 'bg-primary text-white shadow-lg shadow-blue-500/20 border-2 border-primary ring-2 ring-blue-500/20 ring-offset-2 ring-offset-background-light dark:ring-offset-background-dark'
                 : 'bg-white dark:bg-surface-dark text-slate-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-primary/50' 
-                                            }}">
+                                                    }}">
                         <span class="text-lg font-bold">{{ $k['key'] }}</span>
                         <span class="text-[10px] uppercase font-bold opacity-90">{{ $k['label'] }}</span>
                     </button>
@@ -120,18 +120,25 @@
         </div>
     </div>
 
-    <div
-        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-8 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex gap-3">
+    <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+        <div class="flex gap-3">
+
             <a href="{{ route('repertoires.show', $block->repertoire_id) }}"
-                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white font-semibold text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white font-semibold text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-[0.98]">
                 Cancelar
             </a>
+
             <button wire:click="save" wire:loading.attr="disabled"
-                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-primary text-white font-semibold text-base shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors active:scale-[0.98]">
+                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-primary text-white font-semibold text-base shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed">
+
                 <span wire:loading.remove>Salvar</span>
-                <span wire:loading class="material-symbols-outlined animate-spin">progress_activity</span>
+
+                <div wire:loading class="flex items-center gap-2">
+                    <span class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
+                    <span>Salvando...</span>
+                </div>
             </button>
+
         </div>
     </div>
 

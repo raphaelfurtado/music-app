@@ -16,7 +16,7 @@ class ProfileController extends Controller
     {
         // Retorna a view que criamos em resources/views/profile/index.blade.php
         return view('profile.index');
-    }
+}
     /**
      * Display the user's profile form.
      */

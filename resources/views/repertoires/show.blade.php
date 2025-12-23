@@ -84,7 +84,7 @@
     </div>
 </main>
 
-<a href="{{ route('blocks.create', $repertoire->id) }}" class="fixed bottom-8 right-6 w-14 h-14 rounded-full bg-primary shadow-lg shadow-blue-500/30 flex items-center justify-center text-white z-30 hover:bg-blue-600 active:scale-95 transition-all duration-200 group">
+<a href="{{ route('blocks.create', $repertoire->id) }}" class="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-primary shadow-lg shadow-blue-500/30 flex items-center justify-center text-white z-30 hover:bg-blue-600 active:scale-95 transition-all duration-200 group">
     <span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
     <span class="absolute right-16 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Novo Bloco</span>
 </a>

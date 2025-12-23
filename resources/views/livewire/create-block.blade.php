@@ -135,17 +135,25 @@
         </p>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 p-4 pb-8 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex gap-3">
-            <a href="{{ route('repertoires.show', $repertoire->id) }}"
-            class="flex-1 h-12 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white font-semibold text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-[0.98]">
+    <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+        <div class="flex gap-3">
+            
+            <a href="{{ route('repertoires.show', $block->repertoire_id) }}"
+                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white font-semibold text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-[0.98]">
                 Cancelar
             </a>
-            <button wire:click="save" wire:loading.attr="disabled" 
-                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-primary text-white font-semibold text-base shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors active:scale-[0.98]">
+
+            <button wire:click="save" wire:loading.attr="disabled"
+                class="flex-1 h-12 flex items-center justify-center rounded-xl bg-primary text-white font-semibold text-base shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed">
+                
                 <span wire:loading.remove>Salvar</span>
-                <span wire:loading class="material-symbols-outlined animate-spin">progress_activity</span>
+                
+                <div wire:loading class="flex items-center gap-2">
+                    <span class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
+                    <span>Salvando...</span>
+                </div>
             </button>
+            
         </div>
     </div>
 
