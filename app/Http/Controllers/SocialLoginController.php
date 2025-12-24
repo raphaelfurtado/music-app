@@ -17,49 +17,43 @@ class SocialLoginController extends Controller
     }
 
     // 2. Recebe o retorno do Google
-    // 2. Recebe o retorno do Google
     public function handleGoogleCallback()
     {
         try {
-            // TENTATIVA 1: Adicione o ->stateless() aqui.
-            // Isso resolve 90% dos problemas de "InvalidStateException" em subdomínios/produção
-            $googleUser = Socialite::driver('google')->stateless()->user();
-
+            $googleUser = Socialite::driver('google')->user();
+            
             // Verifica se já existe pelo ID do Google
             $user = User::where('google_id', $googleUser->id)->first();
 
-            if (!$user) {
-                // Se não achou pelo ID, tenta pelo E-mail
+            if(!$user){
+                // Se não achou pelo ID, tenta pelo E-mail (caso a pessoa já tenha conta normal)
                 $user = User::where('email', $googleUser->email)->first();
 
-                if ($user) {
-                    // Atualiza conta existente
+                if($user) {
+                    // Atualiza o ID do Google na conta existente
                     $user->update([
                         'google_id' => $googleUser->id,
                         'avatar' => $googleUser->avatar
                     ]);
                 } else {
-                    // Cria novo usuário
+                    // Cria um novo usuário
                     $user = User::create([
                         'name' => $googleUser->name,
                         'email' => $googleUser->email,
                         'google_id' => $googleUser->id,
                         'avatar' => $googleUser->avatar,
-                        'password' => bcrypt(Str::random(16))
+                        'password' => bcrypt(Str::random(16)) // Senha aleatória segura
                     ]);
                 }
             }
 
+            // Realiza o Login
             Auth::login($user);
 
-            return redirect()->route('dashboard'); // Ajuste a rota se necessário
+            return redirect()->route('dashboard'); // Ou para onde desejar
 
         } catch (\Exception $e) {
-            // AQUI ESTÁ O TRUQUE: 
-            // Vamos matar a execução e mostrar o erro na tela preta
-            dd($e->getMessage(), $e->getTraceAsString());
-
-            // return redirect()->route('login')->with('error', 'Erro ao logar com Google.');
+            return redirect()->route('login')->with('error', 'Erro ao logar com Google.');
         }
     }
 }
