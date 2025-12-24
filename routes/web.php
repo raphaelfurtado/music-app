@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RepertoireController;
 use App\Http\Controllers\BlockController;
+use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\SuggestionController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,9 @@ Route::get('/rodar-migrations-secreto', function () {
         return 'Erro: ' . $e->getMessage();
     }
 });
+
+Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
 
 // 1. PÁGINA INICIAL (Pública)
 // Essa rota carrega o arquivo 'resources/views/welcome.blade.php' (seu code 1.html)
