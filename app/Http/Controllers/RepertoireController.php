@@ -70,19 +70,25 @@ class RepertoireController extends Controller
     // Atualizar
     public function update(Request $request, Repertoire $repertoire)
     {
+        // 1. Verifique se o usuário é dono do repertório (Segurança)
         if ($repertoire->user_id !== auth()->id()) {
             abort(403);
         }
 
+        // 2. Validação dos dados
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|min:3|max:255',
+            // Adicione estes apenas se tiver os campos no banco:
+            'event_date' => 'nullable|date',
             'description' => 'nullable|string',
-            'icon' => 'required|string',
         ]);
 
+        // 3. Atualiza no Banco de Dados
         $repertoire->update($validated);
 
-        return redirect()->route('repertoires.show', $repertoire);
+        // 4. O IMPORTANTE: Redirecionar de volta para a tela de visualização
+        return redirect()->route('repertoires.show', $repertoire->id)
+                         ->with('message', 'Repertório atualizado com sucesso!');
     }
 
     // Deletar
