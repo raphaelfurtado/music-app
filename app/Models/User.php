@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'google_id', 
         'password',
         'is_premium', // Adicione isso se não tiver
         'avatar',     // Adicione isso se não tiver
