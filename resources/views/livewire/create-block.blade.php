@@ -70,7 +70,7 @@
 
                         @if(strlen($search) > 2)
                             <div class="p-2 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-background-dark">
-                                <button type="button" wire:click="goToCreateSong('{{ $search }}')"
+                                <button type="button" wire:click="openSongModal"
                                     class="w-full py-3 px-4 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 text-sm font-bold">
                                     <span class="material-symbols-outlined">add_circle</span>
                                     Cadastrar "{{ $search }}"
@@ -81,7 +81,7 @@
                 @endif
             </div>
 
-            <button type="button" wire:click="goToCreateSong('{{ $search }}')"
+            <button type="button" wire:click="openSongModal"
                 class="shrink-0 h-[54px] w-[54px] flex items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors active:scale-95"
                 title="Criar Nova Música">
                 <span class="material-symbols-outlined text-2xl">add</span>
@@ -114,6 +114,7 @@
                                 {{ $song['key'] }}
                             </span>
                         @endif
+                        
                         <button wire:click="removeSong({{ $index }})" type="button"
                             class="p-1.5 ml-1 text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                             <span class="material-symbols-outlined text-lg">delete</span>
@@ -138,7 +139,7 @@
     <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
         <div class="flex gap-3">
             
-            <a href="{{ route('repertoires.show', $block->repertoire_id) }}"
+            <a href="{{ route('repertoires.show', $repertoire_id) }}"
                 class="flex-1 h-12 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-surface-dark text-slate-900 dark:text-white font-semibold text-base hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-[0.98]">
                 Cancelar
             </a>
@@ -157,5 +158,59 @@
         </div>
     </div>
 
-    <livewire:create-song-modal />
+    @if($showSongModal)
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6" 
+         x-data x-trap.noscroll="true">
+        
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+             wire:click="resetSongForm"></div>
+
+        <div class="relative w-full max-w-lg bg-white dark:bg-surface-dark rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
+            
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-surface-dark sticky top-0 z-10">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                    {{ $editingSongId ? 'Editar Música' : 'Nova Música' }}
+                </h3>
+                <button wire:click="resetSongForm" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Nome da Música</label>
+                    <input wire:model="songName" type="text" placeholder="Ex: Oceano"
+                        class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4" />
+                    @error('songName') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Tom</label>
+                    <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
+                        @foreach(['C','D','E','F','G','A','B'] as $key)
+                            <button type="button" wire:click="$set('songKey', '{{ $key }}')"
+                                class="shrink-0 w-10 h-10 rounded-lg text-sm font-bold border {{ $songKey === $key ? 'bg-primary text-white border-primary' : 'bg-gray-50 dark:bg-background-dark border-gray-200 dark:border-gray-700' }}">
+                                {{ $key }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Trecho da Letra</label>
+                    <textarea wire:model="songLyrics" rows="4"
+                        class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4 resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="p-6 pt-2 bg-white dark:bg-surface-dark sticky bottom-0 z-10">
+                <button wire:click="saveSong" class="w-full py-3.5 rounded-xl bg-primary text-white font-bold shadow-lg shadow-blue-500/25 hover:bg-blue-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">save</span>
+                    Salvar Música
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

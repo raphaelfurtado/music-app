@@ -11,14 +11,25 @@ class CreateBlock extends Component
 {
     public Repertoire $repertoire;
 
-    // Campos do Formulário
+    // Campos do Formulário do Bloco
+    public $repertoire_id;
     public $name = '';
     public $predominant_key = '';
     public $description = '';
 
     // Busca e Lista de Músicas
     public $search = '';
-    public $addedSongs = []; // AQUI ESTÁ A CHAVE: Esta lista precisa encher!
+    public $addedSongs = []; 
+
+    // --- PROPRIEDADES DO MODAL (Adicionadas) ---
+    public $showSongModal = false;
+    public $editingSongId = null;
+    
+    public $songName = '';
+    public $songKey = '';
+    public $songBpm = null;
+    public $songLyrics = '';
+    // -------------------------------------------
 
     protected $listeners = ['song-created' => 'addSong'];
 
@@ -34,89 +45,157 @@ class CreateBlock extends Component
     public function mount(Repertoire $repertoire)
     {
         $this->repertoire = $repertoire;
+        $this->repertoire_id = $repertoire->id; // Importante para o botão cancelar
 
-        // 1. RECUPERA A SESSÃO (Músicas que já estavam na lista antes de ir pro Controller)
+        // 1. RECUPERA A SESSÃO
         if (session()->has('temp_block_songs')) {
             $this->addedSongs = session()->pull('temp_block_songs');
         }
 
-        // 2. CAPTURA A MÚSICA NOVA (O ID que o SongController mandou pela URL)
+        // 2. CAPTURA A MÚSICA NOVA VIA URL
         if (request()->has('new_song_id')) {
             $songId = request('new_song_id');
-            $this->addSong($songId); // Adiciona na lista visual imediatamente
+            $this->addSong($songId);
         }
     }
 
-    // Função auxiliar para adicionar música na lista visual
+    // --- MÉTODOS DO MODAL ---
+
+    public function openSongModal()
+    {
+        $this->resetSongForm();
+        $this->showSongModal = true;
+    }
+
+    public function resetSongForm()
+    {
+        $this->reset(['songName', 'songKey', 'songBpm', 'songLyrics', 'editingSongId']);
+        $this->showSongModal = false;
+    }
+
+    public function editSong($songId)
+    {
+        $song = Song::find($songId);
+
+        if ($song) {
+            $this->editingSongId = $song->id;
+            $this->songName = $song->title;
+            $this->songKey = $song->key;
+            $this->songBpm = $song->bpm;
+            $this->songLyrics = $song->lyrics;
+
+            $this->showSongModal = true;
+        }
+    }
+
+    public function saveSong()
+    {
+        $this->validate([
+            'songName' => 'required|string|max:255',
+            'songKey'  => 'nullable|string',
+            'songBpm'  => 'nullable|integer',
+            'songLyrics' => 'nullable|string',
+        ]);
+
+        if ($this->editingSongId) {
+            // --- EDIÇÃO ---
+            $song = Song::find($this->editingSongId);
+            if($song) {
+                $song->update([
+                    'title'  => $this->songName,
+                    'key'    => $this->songKey,
+                    'bpm'    => $this->songBpm,
+                    'lyrics' => $this->songLyrics,
+                ]);
+
+                // Atualiza a música na lista visual ($addedSongs)
+                foreach ($this->addedSongs as $index => $s) {
+                    if ($s['id'] == $this->editingSongId) {
+                        $this->addedSongs[$index] = $song->toArray();
+                        break;
+                    }
+                }
+            }
+        } else {
+            // --- CRIAÇÃO ---
+            $song = Song::create([
+                'title'         => $this->songName,
+                'key'           => $this->songKey,
+                'bpm'           => $this->songBpm,
+                'lyrics'        => $this->songLyrics,
+                'repertoire_id' => $this->repertoire_id,
+                'user_id'       => auth()->id(),
+            ]);
+
+            // Adiciona na lista visual
+            $this->addSong($song->id);
+        }
+
+        $this->resetSongForm();
+    }
+    // ------------------------
+
     public function addSong($songId)
     {
         $song = Song::find($songId);
-        if (!$song)
-            return;
+        if (!$song) return;
 
-        // Evita duplicatas (se a música já estiver na lista, não adiciona de novo)
+        // Evita duplicatas
         foreach ($this->addedSongs as $s) {
-            if ($s['id'] == $songId)
-                return;
+            if ($s['id'] == $songId) return;
         }
 
         $this->addedSongs[] = $song->toArray();
+        $this->search = ''; // Limpa a busca
     }
 
-    // Ação do botão "Cadastrar" no HTML
-    public function goToCreateSong($searchTitle)
-    {
-        // 1. Salva o estado atual na sessão
-        session()->put('temp_block_songs', $this->addedSongs);
-
-        // 2. CORREÇÃO CRÍTICA:
-        // Não use url()->current() aqui, pois ele pega a rota interna do Livewire.
-        // Use o 'Referer', que é o endereço que está no seu navegador agora.
-        $currentUrl = request()->header('Referer');
-
-        // Redireciona para o Controller de Música
-        return redirect()->route('songs.create', [
-            'title' => $searchTitle,
-            'return_url' => $currentUrl // Agora a URL correta vai para o controller
-        ]);
-    }
-
-    // ... (Métodos selectKey, removeSong, updateBlockOrder, etc. iguais aos anteriores) ...
-    public function selectKey($key)
-    {
-        $this->predominant_key = ($this->predominant_key === $key) ? null : $key;
-    }
     public function removeSong($index)
     {
         unset($this->addedSongs[$index]);
         $this->addedSongs = array_values($this->addedSongs);
     }
+
     public function updateBlockOrder($list)
     {
         $ordered = [];
         foreach ($list as $item) {
             $found = collect($this->addedSongs)->firstWhere('id', $item['value']);
-            if ($found)
-                $ordered[] = $found;
+            if ($found) $ordered[] = $found;
         }
         $this->addedSongs = $ordered;
     }
-    public function getSearchResultsProperty()
+
+    public function selectKey($key)
     {
-        if (strlen($this->search) < 2)
-            return [];
-        return Song::where('user_id', auth()->id())->where('title', 'like', '%' . $this->search . '%')->take(5)->get();
+        $this->predominant_key = ($this->predominant_key === $key) ? null : $key;
     }
 
-    // O SALVAMENTO REAL
+    public function getSearchResultsProperty()
+    {
+        if (strlen($this->search) < 2) return [];
+        return Song::where('title', 'like', '%' . $this->search . '%')
+            ->take(5)->get();
+    }
+
+    // Mantido caso você ainda use o redirecionamento externo
+    public function goToCreateSong($searchTitle)
+    {
+        session()->put('temp_block_songs', $this->addedSongs);
+        $currentUrl = request()->header('Referer');
+        return redirect()->route('songs.create', [
+            'title' => $searchTitle,
+            'return_url' => $currentUrl
+        ]);
+    }
+
     public function save()
     {
         $this->validate(['name' => 'required|min:3']);
 
-        DB::beginTransaction(); // Segurança do banco
+        DB::beginTransaction();
 
         try {
-            // 1. Cria o Bloco (que ainda não existia)
+            // 1. Cria o Bloco
             $block = $this->repertoire->blocks()->create([
                 'name' => $this->name,
                 'description' => $this->description,
@@ -124,10 +203,9 @@ class CreateBlock extends Component
                 'order' => $this->repertoire->blocks()->count() + 1,
             ]);
 
-            // 2. Verifica se a lista visual tem músicas
+            // 2. Vincula as músicas da lista ($addedSongs) ao bloco criado
             if (!empty($this->addedSongs)) {
                 $pivotData = [];
-
                 foreach ($this->addedSongs as $index => $song) {
                     $pivotData[] = [
                         'block_id' => $block->id,
@@ -135,19 +213,16 @@ class CreateBlock extends Component
                         'order' => $index + 1,
                     ];
                 }
-
-                // 3. INSERE NA TABELA PIVÔ MANUALMENTE
-                // Isso ignora qualquer erro de Model e força a gravação
                 DB::table('block_song')->insert($pivotData);
             }
 
-            DB::commit(); // Confirma tudo
-
+            DB::commit();
             return redirect()->route('repertoires.show', $this->repertoire->id);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd('Erro ao salvar:', $e->getMessage()); // Mostra erro se houver
+            // Em produção, evite dd(), use session()->flash('error', ...)
+            session()->flash('error', 'Erro ao salvar bloco: ' . $e->getMessage());
         }
     }
 
