@@ -20,12 +20,21 @@ Route::get('/rodar-migrations-secreto', function () {
         abort(403, 'Acesso negado');
     }
 
+    $mode = request('mode'); // fresh ou vazio
+
     // 2. Tenta rodar a migration
     try {
-        Artisan::call('migrate', ['--force' => true]);
-        return 'Sucesso: ' . nl2br(Artisan::output());
+        if ($mode === 'fresh') {
+            Artisan::call('migrate:fresh', ['--force' => true]);
+            $msg = "BANCO RESETADO E RECURSADO: ";
+        } else {
+            Artisan::call('migrate', ['--force' => true]);
+            $msg = "MIGRATIONS EXECUTADAS: ";
+        }
+
+        return $msg . nl2br(Artisan::output());
     } catch (\Exception $e) {
-        return 'Erro: ' . $e->getMessage();
+        return 'ERRO AO RODAR MIGRATIONS: ' . $e->getMessage() . '<br><br>DICA: Se o banco estiver vazio mas com tabelas residuais, tente adicionar "&mode=fresh" ao final da URL (CUIDADO: isso apaga todos os dados!).';
     }
 });
 
@@ -49,6 +58,8 @@ Route::get('/', function () {
     return view('welcome', compact('featuredRepertoires'));
 });
 
+Route::get('/r/{slug}', [RepertoireController::class, 'publicShow'])->name('repertoires.public');
+
 // 2. ROTAS PROTEGIDAS (Só acessa logado)
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -60,7 +71,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('repertoires/{repertoire}/duplicate', [RepertoireController::class, 'duplicate'])->name('repertoires.duplicate');
     Route::match(['get', 'post'], 'repertoires/{repertoire}/toggle-public', [RepertoireController::class, 'togglePublic'])->name('repertoires.toggle-public');
     Route::get('repertoires/{repertoire}/export', [RepertoireController::class, 'exportPdf'])->name('repertoires.export');
-    Route::get('/r/{slug}', [RepertoireController::class, 'publicShow'])->name('repertoires.public');
     Route::resource('repertoires', RepertoireController::class);
 
     Route::get('blocks/{block}/edit', [BlockController::class, 'edit'])->name('blocks.edit');
@@ -84,9 +94,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rotas de Criar/Salvar música (que já configuramos antes)
     Route::get('/songs/create', [App\Http\Controllers\SongController::class, 'create'])->name('songs.create');
     Route::post('/songs', [App\Http\Controllers\SongController::class, 'store'])->name('songs.store');
-
-    // Rota de Perfil
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
 
     // Admin Dashboard (Protegido no Controller)
     Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');

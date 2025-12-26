@@ -16,6 +16,22 @@
             </p>
         </div>
 
+        @if (session('status'))
+            <div
+                class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                <span class="material-symbols-outlined text-xl">info</span>
+                <span class="text-sm font-medium">{{ session('status') }}</span>
+            </div>
+        @endif
+
+        @if (session('info'))
+            <div
+                class="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+                <span class="material-symbols-outlined text-xl">lock</span>
+                <span class="text-sm font-medium">{{ session('info') }}</span>
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}" class="space-y-6">
             @csrf
 
