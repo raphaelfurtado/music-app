@@ -39,7 +39,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('repertoires.index');
     }
-    
+
     // Se não, mostra a tela de boas-vindas
     return view('welcome');
 });
@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/dashboard', [RepertoireController::class, 'index'])->name('dashboard');
+    Route::get('repertoires/{repertoire}/export', [RepertoireController::class, 'exportPdf'])->name('repertoires.export');
     Route::resource('repertoires', RepertoireController::class);
 
     Route::get('blocks/{block}/edit', [BlockController::class, 'edit'])->name('blocks.edit');
@@ -71,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rota de Músicas (Lista de todas as músicas)
     Route::get('/songs', [App\Http\Controllers\SongController::class, 'index'])->name('songs.index');
-    
+
     // Rotas de Criar/Salvar música (que já configuramos antes)
     Route::get('/songs/create', [App\Http\Controllers\SongController::class, 'create'])->name('songs.create');
     Route::post('/songs', [App\Http\Controllers\SongController::class, 'store'])->name('songs.store');

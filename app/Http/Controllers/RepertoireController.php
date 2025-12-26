@@ -51,9 +51,11 @@ class RepertoireController extends Controller
         }
 
         // Carrega os blocos e conta as músicas de cada bloco para evitar N+1 queries
-        $repertoire->load(['blocks' => function($query) {
-            $query->orderBy('order')->withCount('songs');
-        }]);
+        $repertoire->load([
+            'blocks' => function ($query) {
+                $query->orderBy('order')->withCount('songs');
+            }
+        ]);
 
         return view('repertoires.show', compact('repertoire'));
     }
@@ -88,7 +90,34 @@ class RepertoireController extends Controller
 
         // 4. O IMPORTANTE: Redirecionar de volta para a tela de visualização
         return redirect()->route('repertoires.show', $repertoire->id)
-                         ->with('message', 'Repertório atualizado com sucesso!');
+            ->with('message', 'Repertório atualizado com sucesso!');
+    }
+
+    // Exportar PDF
+    public function exportPdf(Repertoire $repertoire)
+    {
+        if ($repertoire->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Carrega os dados necessários: Blocos e Músicas
+        $repertoire->load([
+            'blocks' => function ($query) {
+                $query->orderBy('order')->with([
+                    'songs' => function ($q) {
+                        $q->orderBy('pivot_order'); // Assumindo que existe uma ordem na pivot, senão usa padrão
+                    }
+                ]);
+            }
+        ]);
+
+        // Gera o PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('repertoires.pdf', compact('repertoire'));
+
+        // Define o tamanho do papel (opcional)
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->download('repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf');
     }
 
     // Deletar
