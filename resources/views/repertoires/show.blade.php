@@ -20,9 +20,10 @@
             <form action="{{ route('repertoires.toggle-public', $repertoire->id) }}" method="POST" class="mr-1">
                 @csrf
                 <button type="submit"
-                    class="flex items-center justify-center w-10 h-10 rounded-full transition-colors {{ $repertoire->is_public ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300' }}"
-                    title="{{ $repertoire->is_public ? 'Tornar Privado' : 'Tornar Público' }}">
-                    <span class="material-symbols-outlined">{{ $repertoire->is_public ? 'share_reviews' : 'share' }}</span>
+                    class="flex items-center justify-center w-10 h-10 rounded-full transition-all group {{ $repertoire->is_public ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-400 dark:text-gray-500' }}"
+                    title="{{ $repertoire->is_public ? 'Tornar Privado' : 'Tornar Público (Habilita Link)' }}">
+                    <span
+                        class="material-symbols-outlined transition-transform group-hover:scale-110">{{ $repertoire->is_public ? 'share_reviews' : 'share' }}</span>
                 </button>
             </form>
 

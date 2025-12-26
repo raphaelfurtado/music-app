@@ -33,11 +33,16 @@ class RepertoireController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'icon' => 'required|string|max:50',
+            'is_public' => 'boolean',
         ]);
 
         // Cria associado ao usuário automaticamente
-        $repertoire = auth()->user()->repertoires()->create($validated);
+        $repertoire = auth()->user()->repertoires()->create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'is_public' => $request->has('is_public'),
+            'icon' => 'library_music', // Ícone padrão
+        ]);
 
         return redirect()->route('repertoires.show', $repertoire)
             ->with('success', 'Repertório criado com sucesso!');
@@ -81,13 +86,22 @@ class RepertoireController extends Controller
         // 2. Validação dos dados
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:255',
-            // Adicione estes apenas se tiver os campos no banco:
-            'event_date' => 'nullable|date',
             'description' => 'nullable|string',
+            'is_public' => 'boolean',
         ]);
 
         // 3. Atualiza no Banco de Dados
-        $repertoire->update($validated);
+        $repertoire->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'is_public' => $request->has('is_public'),
+        ]);
+
+        // Se tornou público agora e não tem slug, gera um
+        if ($repertoire->is_public && !$repertoire->slug) {
+            $repertoire->slug = Str::slug($repertoire->name) . '-' . Str::random(6);
+            $repertoire->save();
+        }
 
         // 4. O IMPORTANTE: Redirecionar de volta para a tela de visualização
         return redirect()->route('repertoires.show', $repertoire->id)

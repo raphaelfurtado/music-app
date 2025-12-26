@@ -20,10 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'google_id', 
+        'google_id',
         'password',
-        'is_premium', // Adicione isso se não tiver
-        'avatar',     // Adicione isso se não tiver
+        'is_premium',
+        'is_admin',
+        'avatar',
     ];
 
     /**
@@ -59,5 +60,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(Song::class);
     }
-    
+
 }

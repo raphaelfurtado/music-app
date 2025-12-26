@@ -4,8 +4,9 @@
 
 @section('content')
     <div class="flex flex-col h-screen bg-background-light dark:bg-background-dark">
-        
-        <header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+
+        <header
+            class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
             <div class="flex items-center gap-3">
                 <a href="{{ route('repertoires.show', $repertoire->id) }}"
                     class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white">
@@ -16,7 +17,7 @@
         </header>
 
         <main class="flex-1 w-full max-w-md mx-auto px-4 py-6">
-            
+
             <form action="{{ route('repertoires.update', $repertoire->id) }}" method="POST" class="flex flex-col gap-6">
                 @csrf
                 @method('PUT')
@@ -39,6 +40,31 @@
                         class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base resize-none"
                         placeholder="Ex: Chegar 1 hora antes. Traje esporte fino.">{{ old('description', $repertoire->description) }}</textarea>
                     @error('description') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="space-y-4">
+                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                        Visibilidade
+                    </label>
+                    <div
+                        class="flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-transparent">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                                <span class="material-symbols-outlined">public</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Tornar Público</h4>
+                                <p class="text-[11px] text-gray-500">Permite compartilhar via link público.</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_public" value="1" class="sr-only peer" @checked(old('is_public', $repertoire->is_public))>
+                            <div
+                                class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="flex flex-col-reverse gap-3 pt-6 sm:flex-row pb-10">

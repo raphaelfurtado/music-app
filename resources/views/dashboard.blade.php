@@ -17,9 +17,22 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-slate-900 dark:text-white">{{ $repertoire->name }}</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ $repertoire->blocks->count() }} Blocos • {{ $repertoire->created_at->format('d/m/Y') }}
-                            </p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $repertoire->blocks->count() }} Blocos • {{ $repertoire->created_at->format('d/m/Y') }}
+                                </p>
+                                @if($repertoire->is_public)
+                                    <span class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-500/10 text-green-500 text-[9px] font-bold uppercase tracking-wider border border-green-500/10">
+                                        <span class="material-symbols-outlined text-[10px]">public</span>
+                                        Público
+                                    </span>
+                                @else
+                                    <span class="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gray-500/10 text-gray-500 text-[9px] font-bold uppercase tracking-wider border border-gray-500/10">
+                                        <span class="material-symbols-outlined text-[10px]">lock</span>
+                                        Privado
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </a>

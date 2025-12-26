@@ -3,8 +3,10 @@
 @section('title', 'Criar Novo Repertório')
 
 @section('content')
-    <header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center gap-4 border-b border-gray-200 dark:border-gray-800">
-        <a href="{{ route('dashboard') }}" class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white">
+    <header
+        class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center gap-4 border-b border-gray-200 dark:border-gray-800">
+        <a href="{{ route('dashboard') }}"
+            class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white">
             <span class="material-symbols-outlined text-2xl">arrow_back</span>
         </a>
         <h1 class="text-xl font-bold tracking-tight">Criar Novo Repertório</h1>
@@ -13,7 +15,7 @@
     <main class="flex-1 w-full max-w-md mx-auto px-4 pt-6 pb-6">
         <form action="{{ route('repertoires.store') }}" method="POST" class="flex flex-col gap-6" id="createForm">
             @csrf
-            
+
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-slate-700 dark:text-gray-300" for="name">
                     Nome do Repertório
@@ -21,8 +23,9 @@
                 <div class="relative">
                     <input autofocus
                         class="block w-full rounded-2xl border-0 py-4 px-4 bg-white dark:bg-surface-dark text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-base sm:leading-6 transition-all @error('name') ring-red-500 @enderror"
-                        id="name" name="name" value="{{ old('name') }}" placeholder="Ex: Casamento João & Maria" type="text" />
-                    
+                        id="name" name="name" value="{{ old('name') }}" placeholder="Ex: Casamento João & Maria"
+                        type="text" />
+
                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                         <span class="material-symbols-outlined text-xl">edit</span>
                     </div>
@@ -50,7 +53,7 @@
                 <label class="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Ícone e Cor
                 </label>
-                
+
                 <input type="hidden" name="icon" id="selected_icon_input" value="library_music">
 
                 <div class="flex gap-4 overflow-x-auto no-scrollbar py-1" id="icon-container">
@@ -58,7 +61,7 @@
                         class="icon-btn w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-primary border-2 border-primary flex items-center justify-center shrink-0 transition-all active:scale-95">
                         <span class="material-symbols-outlined">library_music</span>
                     </button>
-                    
+
                     <button type="button" onclick="selectIcon(this, 'nightlife')"
                         class="icon-btn w-14 h-14 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-400 flex items-center justify-center shrink-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
                         <span class="material-symbols-outlined">nightlife</span>
@@ -78,6 +81,30 @@
                         class="icon-btn w-14 h-14 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-400 flex items-center justify-center shrink-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
                         <span class="material-symbols-outlined">mic</span>
                     </button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <label class="text-sm font-semibold text-slate-700 dark:text-gray-300 ml-1">
+                    Visibilidade
+                </label>
+                <div
+                    class="flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-transparent">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                            <span class="material-symbols-outlined">public</span>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Tornar Público</h4>
+                            <p class="text-[11px] text-gray-500">Permite compartilhar via link público.</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_public" value="1" class="sr-only peer" @checked(old('is_public'))>
+                        <div
+                            class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                        </div>
+                    </label>
                 </div>
             </div>
 

@@ -68,6 +68,55 @@
 
     <div class="flex-none z-30"></div>
 
+    @php
+        $globalNotice = \App\Models\Setting::where('key', 'global_notice_active')->first()?->value === '1'
+            ? [
+                'message' => \App\Models\Setting::where('key', 'global_notice_message')->first()?->value,
+                'type' => \App\Models\Setting::where('key', 'global_notice_type')->first()?->value ?? 'info'
+            ] : null;
+
+        $isMaintenance = \App\Models\Setting::where('key', 'maintenance_mode')->first()?->value === '1';
+        $isAdmin = auth()->check() && auth()->user()->is_admin;
+    @endphp
+
+    @if($globalNotice && $globalNotice['message'])
+        @php
+            $bgClass = match($globalNotice['type']) {
+                'error' => 'bg-red-500',
+                'warning' => 'bg-amber-500',
+                'success' => 'bg-emerald-500',
+                default => 'bg-primary'
+            };
+        @endphp
+        <div class="flex-none z-40 {{ $bgClass }} text-white px-4 py-2 text-center text-xs md:text-sm font-bold shadow-lg border-b border-white/10">
+            <div class="max-w-md mx-auto flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">campaign</span>
+                {{ $globalNotice['message'] }}
+            </div>
+        </div>
+    @endif
+
+    @if($isMaintenance && !$isAdmin)
+        <div
+            class="fixed inset-0 z-[100] bg-background-dark/95 backdrop-blur-md flex items-center justify-center p-6 text-center">
+            <div class="max-w-xs">
+                <div class="w-20 h-20 bg-red-500/20 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <span class="material-symbols-outlined text-5xl">construction</span>
+                </div>
+                <h2 class="text-2xl font-black text-white mb-4 italic tracking-tight uppercase">Manutenção</h2>
+                <p class="text-gray-400 mb-8 leading-relaxed">O sistema está passando por ajustes rápidos para melhorar sua
+                    experiência. Voltamos em alguns minutos!</p>
+                <div class="h-1 w-12 bg-primary mx-auto rounded-full"></div>
+            </div>
+        </div>
+    @elseif($isMaintenance && $isAdmin)
+        <div
+            class="fixed top-4 right-4 z-[90] flex items-center gap-2 px-3 py-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full shadow-lg border border-white/20 uppercase tracking-widest animate-pulse">
+            <span class="material-symbols-outlined text-sm">engineering</span>
+            Modo Manutenção Ativo
+        </div>
+    @endif
+
     @if(session('success'))
         <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg font-medium text-sm animate-bounce"
             x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
@@ -92,6 +141,7 @@
 
     @livewireScripts
     <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script>
+    @stack('scripts')
 </body>
 
 </html>

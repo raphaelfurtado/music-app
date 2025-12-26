@@ -10,7 +10,7 @@ class Repertoire extends Model
     use HasFactory;
 
     // Campos que podem ser salvos
-    protected $fillable = ['user_id', 'name', 'description', 'icon', 'color', 'slug', 'is_public'];
+    protected $fillable = ['user_id', 'name', 'description', 'icon', 'color', 'slug', 'is_public', 'is_featured'];
 
     // Um repertório pertence a um usuário
     public function user()

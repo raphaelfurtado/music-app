@@ -40,8 +40,13 @@ Route::get('/', function () {
         return redirect()->route('repertoires.index');
     }
 
+    $featuredRepertoires = \App\Models\Repertoire::where('is_featured', true)
+        ->with('user')
+        ->take(6)
+        ->get();
+
     // Se não, mostra a tela de boas-vindas
-    return view('welcome');
+    return view('welcome', compact('featuredRepertoires'));
 });
 
 // 2. ROTAS PROTEGIDAS (Só acessa logado)
@@ -82,6 +87,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rota de Perfil
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+
+    // Admin Dashboard (Protegido no Controller)
+    Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users.index');
+    Route::post('/admin/users/{user}/toggle-premium', [App\Http\Controllers\AdminController::class, 'togglePremium'])->name('admin.users.toggle-premium');
+    Route::post('/admin/users/{user}/toggle-admin', [App\Http\Controllers\AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::get('/admin/settings', [App\Http\Controllers\AdminController::class, 'settings'])->name('admin.settings.index');
+    Route::post('/admin/settings', [App\Http\Controllers\AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    Route::get('/admin/repertoires', [App\Http\Controllers\AdminController::class, 'repertoires'])->name('admin.repertoires.index');
+    Route::post('/admin/repertoires/{repertoire}/toggle-featured', [App\Http\Controllers\AdminController::class, 'toggleFeatured'])->name('admin.repertoires.toggle-featured');
+    Route::get('/admin/rankings', [App\Http\Controllers\AdminController::class, 'rankings'])->name('admin.rankings.index');
+    Route::get('/admin/export-users', [App\Http\Controllers\AdminController::class, 'exportUsers'])->name('admin.export.users');
+
+    // Rota Temporária para se tornar Admin (Acesse uma vez para testar o painel)
+    Route::get('/make-me-admin', function () {
+        auth()->user()->update(['is_admin' => true]);
+        return redirect()->route('admin.dashboard')->with('success', 'Agora você é um administrador!');
+    });
 });
 
 require __DIR__ . '/auth.php';
