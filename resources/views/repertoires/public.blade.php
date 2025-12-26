@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $repertoire->name }} | Music App</title>
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+
+    <!-- Open Graph / Meta Tags -->
+    <meta property="og:title" content="Repertório: {{ $repertoire->name }}">
+    <meta property="og:description" content="Confira o roteiro musical de {{ $repertoire->name }} no Music App.">
+    <meta property="og:image" content="{{ asset('logo.png') }}">
+    <meta property="og:type" content="website">
+    <meta name="description" content="Confira o roteiro musical de {{ $repertoire->name }} no Music App.">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />

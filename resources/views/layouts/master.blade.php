@@ -4,7 +4,28 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@yield('title', 'App Música')</title>
+
+    <!-- SEO & Branding -->
+    <title>@yield('title', 'Music App - Organize seu Repertório')</title>
+    <meta name="description"
+        content="A plataforma definitiva para músicos organizarem setlists e compartilharem com a banda.">
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'Music App - Organize seu Repertório')">
+    <meta property="og:description"
+        content="A plataforma definitiva para músicos organizarem setlists e compartilharem com a banda.">
+    <meta property="og:image" content="{{ asset('logo.png') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="@yield('title', 'Music App - Organize seu Repertório')">
+    <meta property="twitter:description"
+        content="A plataforma definitiva para músicos organizarem setlists e compartilharem com a banda.">
+    <meta property="twitter:image" content="{{ asset('logo.png') }}">
 
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
