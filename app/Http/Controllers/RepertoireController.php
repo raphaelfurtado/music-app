@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Repertoire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class RepertoireController extends Controller
 {
@@ -171,5 +172,47 @@ class RepertoireController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Repertório excluído.');
+    }
+
+    /**
+     * Visualização Pública (Read-only)
+     */
+    public function publicShow($slug)
+    {
+        $repertoire = Repertoire::where('slug', $slug)
+            ->where('is_public', true)
+            ->with([
+                'blocks' => function ($query) {
+                    $query->orderBy('order')->with([
+                        'songs' => function ($q) {
+                            $q->orderBy('pivot_order');
+                        }
+                    ]);
+                }
+            ])
+            ->firstOrFail();
+
+        return view('repertoires.public', compact('repertoire'));
+    }
+
+    /**
+     * Alternar status público/privado
+     */
+    public function togglePublic(Repertoire $repertoire)
+    {
+        if ($repertoire->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $repertoire->is_public = !$repertoire->is_public;
+
+        if ($repertoire->is_public && !$repertoire->slug) {
+            $repertoire->slug = Str::slug($repertoire->name) . '-' . Str::random(6);
+        }
+
+        $repertoire->save();
+
+        $message = $repertoire->is_public ? 'Link público gerado!' : 'Repertório agora é privado.';
+        return back()->with('success', $message);
     }
 }

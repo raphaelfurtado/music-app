@@ -16,6 +16,16 @@
         </h1>
 
         <div class="flex items-center -mr-2">
+            <!-- Share Toggle -->
+            <form action="{{ route('repertoires.toggle-public', $repertoire->id) }}" method="POST" class="mr-1">
+                @csrf
+                <button type="submit"
+                    class="flex items-center justify-center w-10 h-10 rounded-full transition-colors {{ $repertoire->is_public ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300' }}"
+                    title="{{ $repertoire->is_public ? 'Tornar Privado' : 'Tornar Público' }}">
+                    <span class="material-symbols-outlined">{{ $repertoire->is_public ? 'share_reviews' : 'share' }}</span>
+                </button>
+            </form>
+
             <form action="{{ route('repertoires.duplicate', $repertoire->id) }}" method="POST" class="mr-1"
                 onsubmit="return confirm('Deseja duplicar este repertório?');">
                 @csrf
@@ -49,6 +59,46 @@
             </a>
         </div>
     </header>
+
+    {{-- Link Público Banner --}}
+    @if($repertoire->is_public)
+        <div
+            class="bg-green-500 text-white px-4 py-3 flex items-center justify-between shadow-lg sticky top-[64px] z-10 animate-in fade-in slide-in-from-top-4">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <span class="material-symbols-outlined">public</span>
+                <div class="flex flex-col overflow-hidden">
+                    <span class="text-[10px] font-bold uppercase opacity-80 tracking-wider">Link Público Ativo</span>
+                    <span
+                        class="text-xs font-medium truncate opacity-100">{{ route('repertoires.public', $repertoire->slug) }}</span>
+                </div>
+            </div>
+            <button onclick="copyPublicLink('{{ route('repertoires.public', $repertoire->slug) }}')"
+                class="shrink-0 bg-white/20 hover:bg-white/30 p-2 rounded-xl transition-all active:scale-90 flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">content_copy</span>
+                <span class="text-xs font-bold uppercase">Copiar</span>
+            </button>
+        </div>
+
+        <script>
+            function copyPublicLink(url) {
+                const btn = event.currentTarget;
+                navigator.clipboard.writeText(url).then(() => {
+                    const originalContent = btn.innerHTML;
+
+                    // Feedback visual
+                    btn.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span> <span class="text-xs font-bold uppercase">Copiado!</span>';
+                    btn.classList.add('bg-white', 'text-green-600', 'scale-105', 'shadow-lg');
+                    btn.classList.remove('bg-white/20', 'text-white');
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.classList.remove('bg-white', 'text-green-600', 'scale-105', 'shadow-lg');
+                        btn.classList.add('bg-white/20', 'text-white');
+                    }, 2000);
+                });
+            }
+        </script>
+    @endif
 
     <main class="flex-1 w-full max-w-md mx-auto px-4 pb-24 pt-4" x-data="{ allExpanded: false }">
 

@@ -53,7 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [RepertoireController::class, 'index'])->name('dashboard');
     Route::post('repertoires/{repertoire}/duplicate', [RepertoireController::class, 'duplicate'])->name('repertoires.duplicate');
+    Route::match(['get', 'post'], 'repertoires/{repertoire}/toggle-public', [RepertoireController::class, 'togglePublic'])->name('repertoires.toggle-public');
     Route::get('repertoires/{repertoire}/export', [RepertoireController::class, 'exportPdf'])->name('repertoires.export');
+    Route::get('/r/{slug}', [RepertoireController::class, 'publicShow'])->name('repertoires.public');
     Route::resource('repertoires', RepertoireController::class);
 
     Route::get('blocks/{block}/edit', [BlockController::class, 'edit'])->name('blocks.edit');
