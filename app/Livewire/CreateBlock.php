@@ -4,8 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Repertoire;
-use App\Models\Song;
-use Illuminate\Support\Facades\DB;
+// use App\Models\Song; // Não usado mais
+// use Illuminate\Support\Facades\DB; // Não usado mais
 
 class CreateBlock extends Component
 {
@@ -28,12 +28,13 @@ class CreateBlock extends Component
     protected $listeners = ['song-created' => 'addSong'];
 
     public $keys = [
-        ['key' => 'G', 'label' => 'Sol'],
         ['key' => 'C', 'label' => 'Dó'],
         ['key' => 'D', 'label' => 'Ré'],
         ['key' => 'E', 'label' => 'Mi'],
         ['key' => 'F', 'label' => 'Fá'],
+        ['key' => 'G', 'label' => 'Sol'],
         ['key' => 'A', 'label' => 'Lá'],
+        ['key' => 'B', 'label' => 'Si'],
     ];
 
     public function mount(Repertoire $repertoire)
@@ -128,10 +129,8 @@ class CreateBlock extends Component
     {
         $this->validate(['name' => 'required|min:3']);
 
-        DB::beginTransaction();
-
         try {
-            // 1. Cria o Bloco
+            // Cria o Bloco
             $block = $this->repertoire->blocks()->create([
                 'name' => $this->name,
                 'description' => $this->description,
@@ -139,25 +138,10 @@ class CreateBlock extends Component
                 'order' => $this->repertoire->blocks()->count() + 1,
             ]);
 
-            // 2. Vincula as músicas da lista ($addedSongs) ao bloco criado
-            if (!empty($this->addedSongs)) {
-                $pivotData = [];
-                foreach ($this->addedSongs as $index => $song) {
-                    $pivotData[] = [
-                        'block_id' => $block->id,
-                        'song_id' => $song['id'],
-                        'order' => $index + 1,
-                    ];
-                }
-                DB::table('block_song')->insert($pivotData);
-            }
-
-            DB::commit();
-            return redirect()->route('repertoires.show', $this->repertoire->id);
+            // Redireciona para a tela de EDIÇÃO
+            return redirect()->route('blocks.edit', $block->id);
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            // Em produção, evite dd(), use session()->flash('error', ...)
             session()->flash('error', 'Erro ao salvar bloco: ' . $e->getMessage());
         }
     }
