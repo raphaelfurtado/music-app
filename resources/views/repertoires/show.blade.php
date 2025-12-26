@@ -12,9 +12,31 @@
         </a>
 
         <h1 class="text-base font-bold tracking-tight truncate max-w-[60%] text-slate-900 dark:text-white">
-            {{ $repertoire->name }}</h1>
+            {{ $repertoire->name }}
+        </h1>
 
         <div class="flex items-center -mr-2">
+            <form action="{{ route('repertoires.duplicate', $repertoire->id) }}" method="POST" class="mr-1"
+                onsubmit="return confirm('Deseja duplicar este repertório?');">
+                @csrf
+                <button type="submit"
+                    class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300"
+                    title="Duplicar">
+                    <span class="material-symbols-outlined">content_copy</span>
+                </button>
+            </form>
+
+            <form action="{{ route('repertoires.destroy', $repertoire->id) }}" method="POST" class="mr-1"
+                onsubmit="return confirm('Tem certeza que deseja excluir este repertório? Esta ação não pode ser desfeita.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                    class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-red-500 dark:text-red-400"
+                    title="Excluir">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </form>
+
             <a href="{{ route('repertoires.export', $repertoire->id) }}" target="_blank"
                 class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300 mr-1"
                 title="Exportar PDF">

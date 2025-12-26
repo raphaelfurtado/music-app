@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/dashboard', [RepertoireController::class, 'index'])->name('dashboard');
+    Route::post('repertoires/{repertoire}/duplicate', [RepertoireController::class, 'duplicate'])->name('repertoires.duplicate');
     Route::get('repertoires/{repertoire}/export', [RepertoireController::class, 'exportPdf'])->name('repertoires.export');
     Route::resource('repertoires', RepertoireController::class);
 

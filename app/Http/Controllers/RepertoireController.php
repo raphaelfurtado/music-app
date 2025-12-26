@@ -120,6 +120,46 @@ class RepertoireController extends Controller
         return $pdf->download('repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf');
     }
 
+    // Duplicar Repertório
+    public function duplicate(Repertoire $repertoire)
+    {
+        if ($repertoire->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // 1. Clona o Repertório
+        $newRepertoire = $repertoire->replicate(['created_at', 'updated_at']);
+        $newRepertoire->name = $repertoire->name . ' (Cópia)';
+        $newRepertoire->save();
+
+        // 2. Clona os Blocos e suas associações com Músicas
+        $repertoire->load('blocks.songs');
+
+        foreach ($repertoire->blocks as $block) {
+            // Clona o Bloco
+            $newBlock = $block->replicate(['repertoire_id', 'created_at', 'updated_at']);
+            $newBlock->repertoire_id = $newRepertoire->id;
+            $newBlock->save();
+
+            // Sincroniza as músicas (mantendo a pivot data se houver, ex: ordem)
+            // Aqui pegamos os IDs e os atributos da pivot para clonar tudo
+            $songsWithPivot = [];
+            foreach ($block->songs as $song) {
+                // $song->pivot fornece acesso aos dados da tabela intermediária
+                // Precisamos passar um array [song_id => pivot_data]
+                // Se sua pivot tiver colunas extras (ex: 'order'), elas devem estar aqui
+                $songsWithPivot[$song->id] = collect($song->pivot->toArray())
+                    ->except(['block_id', 'song_id']) // remove chaves estrangeiras duplicadas
+                    ->toArray();
+            }
+
+            $newBlock->songs()->attach($songsWithPivot);
+        }
+
+        return redirect()->route('repertoires.show', $newRepertoire)
+            ->with('success', 'Repertório duplicado com sucesso!');
+    }
+
     // Deletar
     public function destroy(Repertoire $repertoire)
     {
