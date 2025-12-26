@@ -126,11 +126,14 @@ class RepertoireController extends Controller
             }
         ]);
 
-        // Gera o PDF
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('repertoires.pdf', compact('repertoire'));
-
-        // Define o tamanho do papel (opcional)
-        $pdf->setPaper('a4', 'portrait');
+        // Gera o PDF com configurações robustas para evitar erro de "Cannot resolve public path" em produção
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('repertoires.pdf', compact('repertoire'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'chroot' => base_path(), // Define a raiz do projeto como base de segurança
+            ]);
 
         return $pdf->download('repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf');
     }
