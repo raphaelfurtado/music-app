@@ -42,6 +42,30 @@
                     @error('description') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
                 </div>
 
+                <div class="space-y-3">
+                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                        Ícone
+                    </label>
+
+                    <input type="hidden" name="icon" id="selected_icon_input" value="{{ old('icon', $repertoire->icon) }}">
+
+                    <div class="flex gap-4 overflow-x-auto no-scrollbar py-1" id="icon-container">
+                        @php
+                            $icons = ['library_music', 'nightlife', 'church', 'piano', 'mic'];
+                        @endphp
+
+                        @foreach($icons as $iconName)
+                                        <button type="button" onclick="selectIcon(this, '{{ $iconName }}')"
+                                            class="icon-btn w-14 h-14 rounded-2xl shrink-0 transition-all active:scale-95 flex items-center justify-center 
+                                                    {{ old('icon', $repertoire->icon) == $iconName
+                            ? 'bg-blue-100 dark:bg-blue-900/40 text-primary border-2 border-primary'
+                            : 'bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                                            <span class="material-symbols-outlined">{{ $iconName }}</span>
+                                        </button>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="space-y-4">
                     <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
                         Visibilidade
@@ -82,4 +106,17 @@
             </form>
         </main>
     </div>
+
+    <script>
+        function selectIcon(buttonElement, iconValue) {
+            document.getElementById('selected_icon_input').value = iconValue;
+
+            const buttons = document.querySelectorAll('.icon-btn');
+            buttons.forEach(btn => {
+                btn.className = "icon-btn w-14 h-14 rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-gray-400 flex items-center justify-center shrink-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all";
+            });
+
+            buttonElement.className = "icon-btn w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-primary border-2 border-primary flex items-center justify-center shrink-0 transition-transform active:scale-95";
+        }
+    </script>
 @endsection

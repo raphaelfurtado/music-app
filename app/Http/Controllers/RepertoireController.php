@@ -88,6 +88,7 @@ class RepertoireController extends Controller
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string',
             'is_public' => 'boolean',
+            'icon' => 'required|string|max:50',
         ]);
 
         // 3. Atualiza no Banco de Dados
@@ -95,6 +96,7 @@ class RepertoireController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'],
             'is_public' => $request->has('is_public'),
+            'icon' => $validated['icon'],
         ]);
 
         // Se tornou público agora e não tem slug, gera um
@@ -120,22 +122,45 @@ class RepertoireController extends Controller
             'blocks' => function ($query) {
                 $query->orderBy('order')->with([
                     'songs' => function ($q) {
-                        $q->orderBy('pivot_order'); // Assumindo que existe uma ordem na pivot, senão usa padrão
+                        $q->orderBy('pivot_order');
                     }
                 ]);
             }
         ]);
 
-        // Gera o PDF com configurações robustas para evitar erro de "Cannot resolve public path" em produção
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('repertoires.pdf', compact('repertoire'))
-            ->setPaper('a4', 'portrait')
-            ->setOptions([
+        // Tenta gerar o PDF usando o Facade (método padrão)
+        try {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('repertoires.pdf', compact('repertoire'))
+                ->setPaper('a4', 'portrait')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'chroot' => base_path(),
+                ]);
+
+            return $pdf->download('repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf');
+
+        } catch (\Exception $e) {
+            // Se falhar (como o erro de "public path" em produção), tentamos o método manual robusto
+            // Isso ignora as verificações automáticas do ServiceProvider do Laravel que estão falhando
+
+            $dompdf = new \Dompdf\Dompdf([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
-                'chroot' => base_path(), // Define a raiz do projeto como base de segurança
+                'chroot' => base_path(),
+                'logOutputFile' => storage_path('logs/dompdf.log.html'),
+                'tempDir' => storage_path('app/public'),
             ]);
 
-        return $pdf->download('repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf');
+            $html = view('repertoires.pdf', compact('repertoire'))->render();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('a4', 'portrait');
+            $dompdf->render();
+
+            return response($dompdf->output())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="repertorio-' . \Illuminate\Support\Str::slug($repertoire->name) . '.pdf"');
+        }
     }
 
     // Duplicar Repertório
