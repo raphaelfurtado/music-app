@@ -1,52 +1,112 @@
 <div>
     @if($isOpen)
-    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="close"></div>
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6" x-data
+            x-trap.noscroll="true">
 
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" wire:click="close"></div>
 
-            <div class="inline-block align-bottom bg-white dark:bg-surface-dark rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                
-                <div class="bg-white dark:bg-surface-dark px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg leading-6 font-medium text-slate-900 dark:text-white" id="modal-title">
-                            Nova Música
-                        </h3>
-                        <button wire:click="close" class="text-gray-400 hover:text-gray-500">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
+            <div
+                class="relative w-full max-w-lg bg-white dark:bg-surface-dark rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
+
+                <div
+                    class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-surface-dark sticky top-0 z-10">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                        {{ $editingSongId ? 'Editar Música' : 'Nova Música' }}
+                    </h3>
+                    <button wire:click="close"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Nome da
+                            Música</label>
+                        <input wire:model="title" type="text" placeholder="Ex: Oceano"
+                            class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4" />
+                        @error('title') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="flex flex-col gap-4">
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Nome da Música aaa</label>
-                            <input wire:model="title" type="text" class="block w-full px-4 py-3 rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark text-slate-900 dark:text-white focus:ring-primary" placeholder="Ex: Oceano">
-                            @error('title') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Artista</label>
+                        <input wire:model="artist" type="text" placeholder="Ex: Djavan"
+                            class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4" />
+                        @error('artist') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Tom</label>
+                                @if($key)
+                                    <span
+                                        class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{{ $key }}</span>
+                                @endif
+                            </div>
+
+                            <div class="mb-2">
+                                <span class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Maiores</span>
+                                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 pt-1">
+                                    @foreach(['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'] as $k)
+                                                            <button type="button" wire:click="$set('key', '{{ $k }}')" class="shrink-0 w-10 h-10 rounded-lg text-sm font-bold transition-all border
+                                                                        {{ $key === $k
+                                        ? 'bg-primary text-white border-primary shadow-lg shadow-blue-500/30 ring-2 ring-primary/20'
+                                        : 'bg-white dark:bg-surface-dark text-slate-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary' 
+                                                                        }}">
+                                                                {{ $k }}
+                                                            </button>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Menores</span>
+                                <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 pt-1">
+                                    @foreach(['Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm'] as $k)
+                                                            <button type="button" wire:click="$set('key', '{{ $k }}')" class="shrink-0 w-auto px-3 h-10 rounded-lg text-xs font-bold transition-all border
+                                                                        {{ $key === $k
+                                        ? 'bg-primary text-white border-primary shadow-lg shadow-blue-500/30 ring-2 ring-primary/20'
+                                        : 'bg-gray-50 dark:bg-surface-dark text-slate-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary hover:text-primary' 
+                                                                        }}">
+                                                                {{ $k }}
+                                                            </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Tom</label>
-                            <input wire:model="key" type="text" class="block w-full px-4 py-3 rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark text-slate-900 dark:text-white focus:ring-primary" placeholder="Ex: G">
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">BPM (Batidas
+                                por minuto)</label>
+                            <div class="relative">
+                                <input wire:model="bpm" type="number" placeholder="Ex: 120"
+                                    class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4 transition-all" />
+                                <div
+                                    class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-xs font-bold text-gray-400">
+                                    BPM
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Observações</label>
-                            <textarea wire:model="lyrics" rows="3" class="block w-full px-4 py-3 rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark text-slate-900 dark:text-white focus:ring-primary"></textarea>
-                        </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 ml-1">Trecho da Letra /
+                            Obs</label>
+                        <textarea wire:model="lyrics" rows="4" placeholder="Cole o início da letra aqui..."
+                            class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-background-dark text-slate-900 dark:text-white focus:border-primary focus:ring-primary shadow-sm py-3 px-4 resize-none"></textarea>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 dark:bg-background-dark px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                    <button wire:click="save" type="button" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                        Salvar Música
-                    </button>
-                    <button wire:click="close" type="button" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-3 bg-white dark:bg-surface-dark text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Cancelar
+                <div class="p-6 pt-2 bg-white dark:bg-surface-dark sticky bottom-0 z-10">
+                    <button wire:click="save"
+                        class="w-full py-3.5 rounded-xl bg-primary text-white font-bold shadow-lg shadow-blue-500/25 hover:bg-blue-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">save</span>
+                        {{ $editingSongId ? 'Atualizar Música' : 'Adicionar Música' }}
                     </button>
                 </div>
             </div>
         </div>
-    </div>
     @endif
 </div>

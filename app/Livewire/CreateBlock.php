@@ -19,16 +19,10 @@ class CreateBlock extends Component
 
     // Busca e Lista de Músicas
     public $search = '';
-    public $addedSongs = []; 
+    public $addedSongs = [];
 
     // --- PROPRIEDADES DO MODAL (Adicionadas) ---
-    public $showSongModal = false;
-    public $editingSongId = null;
-    
-    public $songName = '';
-    public $songKey = '';
-    public $songBpm = null;
-    public $songLyrics = '';
+    // Removidas em favor do CreateSongModal
     // -------------------------------------------
 
     protected $listeners = ['song-created' => 'addSong'];
@@ -63,86 +57,26 @@ class CreateBlock extends Component
 
     public function openSongModal()
     {
-        $this->resetSongForm();
-        $this->showSongModal = true;
-    }
-
-    public function resetSongForm()
-    {
-        $this->reset(['songName', 'songKey', 'songBpm', 'songLyrics', 'editingSongId']);
-        $this->showSongModal = false;
-    }
-
-    public function editSong($songId)
-    {
-        $song = Song::find($songId);
-
-        if ($song) {
-            $this->editingSongId = $song->id;
-            $this->songName = $song->title;
-            $this->songKey = $song->key;
-            $this->songBpm = $song->bpm;
-            $this->songLyrics = $song->lyrics;
-
-            $this->showSongModal = true;
-        }
-    }
-
-    public function saveSong()
-    {
-        $this->validate([
-            'songName' => 'required|string|max:255',
-            'songKey'  => 'nullable|string',
-            'songBpm'  => 'nullable|integer',
-            'songLyrics' => 'nullable|string',
-        ]);
-
-        if ($this->editingSongId) {
-            // --- EDIÇÃO ---
-            $song = Song::find($this->editingSongId);
-            if($song) {
-                $song->update([
-                    'title'  => $this->songName,
-                    'key'    => $this->songKey,
-                    'bpm'    => $this->songBpm,
-                    'lyrics' => $this->songLyrics,
-                ]);
-
-                // Atualiza a música na lista visual ($addedSongs)
-                foreach ($this->addedSongs as $index => $s) {
-                    if ($s['id'] == $this->editingSongId) {
-                        $this->addedSongs[$index] = $song->toArray();
-                        break;
-                    }
-                }
-            }
-        } else {
-            // --- CRIAÇÃO ---
-            $song = Song::create([
-                'title'         => $this->songName,
-                'key'           => $this->songKey,
-                'bpm'           => $this->songBpm,
-                'lyrics'        => $this->songLyrics,
-                'repertoire_id' => $this->repertoire_id,
-                'user_id'       => auth()->id(),
-            ]);
-
-            // Adiciona na lista visual
-            $this->addSong($song->id);
-        }
-
-        $this->resetSongForm();
+        // Envia o search atual como sugestão de nome
+        // E passa o repertoire_id para já vincular corretamente
+        $this->dispatch(
+            'openSongModal',
+            searchName: $this->search,
+            repertoireId: $this->repertoire_id
+        );
     }
     // ------------------------
 
     public function addSong($songId)
     {
         $song = Song::find($songId);
-        if (!$song) return;
+        if (!$song)
+            return;
 
         // Evita duplicatas
         foreach ($this->addedSongs as $s) {
-            if ($s['id'] == $songId) return;
+            if ($s['id'] == $songId)
+                return;
         }
 
         $this->addedSongs[] = $song->toArray();
@@ -160,7 +94,8 @@ class CreateBlock extends Component
         $ordered = [];
         foreach ($list as $item) {
             $found = collect($this->addedSongs)->firstWhere('id', $item['value']);
-            if ($found) $ordered[] = $found;
+            if ($found)
+                $ordered[] = $found;
         }
         $this->addedSongs = $ordered;
     }
@@ -172,7 +107,8 @@ class CreateBlock extends Component
 
     public function getSearchResultsProperty()
     {
-        if (strlen($this->search) < 2) return [];
+        if (strlen($this->search) < 2)
+            return [];
         return Song::where('title', 'like', '%' . $this->search . '%')
             ->take(5)->get();
     }

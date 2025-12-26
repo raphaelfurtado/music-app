@@ -19,20 +19,12 @@ class EditBlock extends Component
     public $search = '';
     public $addedSongs = [];
 
-    // --- NOVAS PROPRIEDADES (Faltavam estas para o Modal funcionar) ---
-    public $showSongModal = false; // Controla se o modal abre/fecha
-    public $editingSongId = null;  // Controla se é Edição ou Criação
-    
-    // Campos do Formulário do Modal (Música)
-    public $songName = '';
-    public $songKey = '';
-    public $songBpm = null;
-    public $songLyrics = '';
-    // -----------------------------------------------------------------
+    protected $listeners = [
+        'song-created' => 'addSong',
+        'song-updated' => 'refreshSongList'
+    ];
 
-    protected $listeners = ['song-created' => 'addSong'];
-
-    // Tons para os botões
+    // Tons para os botões - MANTIDO para o bloco, não para música
     public $keys = [
         ['key' => 'G', 'label' => 'Sol'],
         ['key' => 'C', 'label' => 'Dó'],
@@ -66,15 +58,22 @@ class EditBlock extends Component
             ->toArray();
     }
 
-    // Adiciona uma música existente (da busca) ao bloco
+    // Chamado quando uma música é editada externamente
+    public function refreshSongList($songId)
+    {
+        $this->loadSongs();
+    }
+
+    // Adiciona uma música existente (da busca ou recém-criada) ao bloco
     public function addSong($songId)
     {
         $song = Song::find($songId);
-        if (!$song) return;
+        if (!$song)
+            return;
 
         // Verifica se já existe para não duplicar
         $exists = $this->block->songs()->where('song_id', $songId)->exists();
-        
+
         if (!$exists) {
             // Salva IMEDIATAMENTE no banco
             $this->block->songs()->attach($songId, [
@@ -91,93 +90,30 @@ class EditBlock extends Component
     {
         if (isset($this->addedSongs[$index])) {
             $songId = $this->addedSongs[$index]['id'];
-            
+
             // Remove IMEDIATAMENTE do banco
             $this->block->songs()->detach($songId);
-            
+
             $this->loadSongs(); // Recarrega a lista
         }
     }
 
-    // Prepara o modal para EDITAR uma música existente
+    // Abre o modal de EDIÇÃO (Dispara para o componente filho)
     public function editSong($songId)
     {
-        $song = Song::find($songId);
-
-        if ($song) {
-            $this->editingSongId = $song->id;
-
-            // Preenche os campos do modal com os dados do banco
-            $this->songName = $song->title; 
-            $this->songKey = $song->key;
-            $this->songBpm = $song->bpm;
-            $this->songLyrics = $song->lyrics; 
-
-            $this->showSongModal = true;
-        }
+        $this->dispatch('editSong', songId: $songId);
     }
 
-    // Função Principal: Salva (Cria ou Atualiza) a música vinda do Modal
-    public function saveSong()
-    {
-        // Validação
-        $this->validate([
-            'songName' => 'required|string|max:255',
-            'songKey'  => 'nullable|string',
-            'songBpm'  => 'nullable|integer',
-            'songLyrics' => 'nullable|string',
-        ]);
-
-        if ($this->editingSongId) {
-            // --- MODO EDIÇÃO ---
-            $song = Song::find($this->editingSongId);
-            if ($song) {
-                $song->update([
-                    'title'  => $this->songName,
-                    'key'    => $this->songKey,
-                    'bpm'    => $this->songBpm,
-                    'lyrics' => $this->songLyrics,
-                ]);
-            }
-        } else {
-            // --- MODO CRIAÇÃO ---
-            $song = Song::create([
-                'title'         => $this->songName,
-                'key'           => $this->songKey,
-                'bpm'           => $this->songBpm,
-                'lyrics'        => $this->songLyrics,
-                'repertoire_id' => $this->block->repertoire_id,
-                'user_id'       => auth()->id(), // Importante vincular ao usuário se tiver essa coluna
-            ]);
-
-            // Vincula ao bloco imediatamente
-            $this->block->songs()->attach($song->id, [
-                'order' => $this->block->songs()->count() + 1
-            ]);
-        }
-
-        // Limpa e fecha
-        $this->block->refresh();
-        $this->loadSongs();
-        $this->resetSongForm();
-        $this->showSongModal = false;
-    }
-
-    // Limpa o formulário do modal
-    public function resetSongForm()
-    {
-        // 1. Limpa os campos
-        $this->reset(['songName', 'songKey', 'songBpm', 'songLyrics', 'editingSongId']);
-        
-        // 2. FECHA O MODAL (Essa linha é essencial e devia estar faltando)
-        $this->showSongModal = false; 
-    }
-
-    // Abre o modal em modo "Criar Nova" (Limpo)
+    // Abre o modal de CRIAÇÃO (Dispara para o componente filho)
     public function openSongModal()
     {
-        $this->resetSongForm();
-        $this->showSongModal = true;
+        // Envia o search atual como sugestão de nome
+        // E passa o repertoire_id para já vincular corretamente se necessário
+        $this->dispatch(
+            'openSongModal',
+            searchName: $this->search,
+            repertoireId: $this->block->repertoire_id
+        );
     }
 
     // Reordenação (Drag and Drop)

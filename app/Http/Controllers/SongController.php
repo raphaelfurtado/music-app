@@ -31,6 +31,7 @@ class SongController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'artist' => 'nullable|string|max:255',
             'key' => 'nullable|string|max:10',
             'bpm' => 'nullable|integer', // Novo campo BPM
             'lyrics' => 'nullable|string',
@@ -39,6 +40,7 @@ class SongController extends Controller
         $song = Song::create([
             'user_id' => auth()->id(),
             'title' => $validated['title'],
+            'artist' => $validated['artist'],
             'key' => $validated['key'],
             'bpm' => $validated['bpm'], // Salvando BPM
             'lyrics' => $validated['lyrics'],

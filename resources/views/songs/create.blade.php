@@ -36,6 +36,22 @@
                     @error('title') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
                 </div>
 
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songArtist">
+                        Artista
+                    </label>
+                    <div class="relative group">
+                        <input name="artist" value="{{ old('artist') }}"
+                            class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base transition-shadow"
+                            id="songArtist" placeholder="Ex: Djavan" type="text" />
+                        <div
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                            <span class="material-symbols-outlined">person</span>
+                        </div>
+                    </div>
+                    @error('artist') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
+                </div>
+
                 <div class="flex gap-4">
                     <div class="space-y-2 flex-1">
                         <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songKey">
@@ -68,11 +84,11 @@
                     <div>
                         <span class="text-[10px] uppercase font-bold text-gray-400 ml-1">Maiores</span>
                         <div class="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-                            @foreach(['C','Db','D','Eb','E','F','F#','G','Ab','A','Bb','B'] as $k)
-                            <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
-                                class="shrink-0 h-10 w-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark text-sm font-bold text-slate-700 dark:text-gray-200 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm">
-                                {{ $k }}
-                            </button>
+                            @foreach(['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'] as $k)
+                                <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
+                                    class="shrink-0 h-10 w-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark text-sm font-bold text-slate-700 dark:text-gray-200 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm">
+                                    {{ $k }}
+                                </button>
                             @endforeach
                         </div>
                     </div>
@@ -80,11 +96,11 @@
                     <div>
                         <span class="text-[10px] uppercase font-bold text-gray-400 ml-1">Menores</span>
                         <div class="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-                            @foreach(['Cm','C#m','Dm','Ebm','Em','Fm','F#m','Gm','G#m','Am','Bbm','Bm'] as $k)
-                            <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
-                                class="shrink-0 h-10 w-auto px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-dark/50 text-xs font-semibold text-slate-600 dark:text-gray-400 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all">
-                                {{ $k }}
-                            </button>
+                            @foreach(['Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm'] as $k)
+                                <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
+                                    class="shrink-0 h-10 w-auto px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-dark/50 text-xs font-semibold text-slate-600 dark:text-gray-400 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all">
+                                    {{ $k }}
+                                </button>
                             @endforeach
                         </div>
                     </div>
