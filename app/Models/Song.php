@@ -9,7 +9,13 @@ class Song extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'title', 'artist', 'key', 'bpm', 'lyrics'];
+    protected $fillable = ['user_id', 'artist_id', 'title', 'artist', 'key', 'bpm', 'lyrics'];
+
+    // Uma música pertence a um artista
+    public function artistModel()
+    {
+        return $this->belongsTo(Artist::class, 'artist_id');
+    }
 
     // Uma música pertence a quem a cadastrou
     public function user()

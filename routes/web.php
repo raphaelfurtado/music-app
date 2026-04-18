@@ -5,6 +5,7 @@ use App\Http\Controllers\RepertoireController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\SongController;
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,11 @@ Route::get('/', function () {
 
 Route::get('/r/{slug}', [RepertoireController::class, 'publicShow'])->name('repertoires.public');
 
+// Artist & Song Public Exploration (Cifra Club Style)
+Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index');
+Route::get('/songs', [SongController::class, 'index'])->name('songs.index');
+
+
 // 2. ROTAS PROTEGIDAS (Só acessa logado)
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -69,6 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [RepertoireController::class, 'index'])->name('dashboard');
     Route::post('repertoires/{repertoire}/duplicate', [RepertoireController::class, 'duplicate'])->name('repertoires.duplicate');
+    Route::post('repertoires/{repertoire}/start-show', [RepertoireController::class, 'startShow'])->name('repertoires.start-show');
+    Route::post('repertoires/{repertoire}/stop-show', [RepertoireController::class, 'stopShow'])->name('repertoires.stop-show');
     Route::match(['get', 'post'], 'repertoires/{repertoire}/toggle-public', [RepertoireController::class, 'togglePublic'])->name('repertoires.toggle-public');
     Route::get('repertoires/{repertoire}/export', [RepertoireController::class, 'exportPdf'])->name('repertoires.export');
     Route::resource('repertoires', RepertoireController::class);
@@ -86,26 +94,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('songs', SongController::class);
+    // Personal Library / Song CRUD
+    Route::resource('songs', SongController::class)->except(['show']);
 
-    // Rota de Músicas (Lista de todas as músicas)
-    Route::get('/songs', [App\Http\Controllers\SongController::class, 'index'])->name('songs.index');
+    // Admin-only: Global Library Management (Artists & Songs)
+    Route::middleware('can:admin')->group(function () {
+        Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
+        Route::resource('artists', ArtistController::class)->except(['index']);
+        // Here admin can create global songs (songs with user_id = null or similar)
 
-    // Rotas de Criar/Salvar música (que já configuramos antes)
-    Route::get('/songs/create', [App\Http\Controllers\SongController::class, 'create'])->name('songs.create');
-    Route::post('/songs', [App\Http\Controllers\SongController::class, 'store'])->name('songs.store');
+        Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users.index');
+        Route::post('/admin/users/{user}/toggle-premium', [App\Http\Controllers\AdminController::class, 'togglePremium'])->name('admin.users.toggle-premium');
+        Route::post('/admin/users/{user}/toggle-admin', [App\Http\Controllers\AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+        Route::get('/admin/settings', [App\Http\Controllers\AdminController::class, 'settings'])->name('admin.settings.index');
+        Route::post('/admin/settings', [App\Http\Controllers\AdminController::class, 'updateSettings'])->name('admin.settings.update');
+        Route::get('/admin/repertoires', [App\Http\Controllers\AdminController::class, 'repertoires'])->name('admin.repertoires.index');
+        Route::post('/admin/repertoires/{repertoire}/toggle-featured', [App\Http\Controllers\AdminController::class, 'toggleFeatured'])->name('admin.repertoires.toggle-featured');
+        Route::get('/admin/rankings', [App\Http\Controllers\AdminController::class, 'rankings'])->name('admin.rankings.index');
+        Route::get('/admin/export-users', [App\Http\Controllers\AdminController::class, 'exportUsers'])->name('admin.export.users');
+    });
 
-    // Admin Dashboard (Protegido no Controller)
-    Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users.index');
-    Route::post('/admin/users/{user}/toggle-premium', [App\Http\Controllers\AdminController::class, 'togglePremium'])->name('admin.users.toggle-premium');
-    Route::post('/admin/users/{user}/toggle-admin', [App\Http\Controllers\AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
-    Route::get('/admin/settings', [App\Http\Controllers\AdminController::class, 'settings'])->name('admin.settings.index');
-    Route::post('/admin/settings', [App\Http\Controllers\AdminController::class, 'updateSettings'])->name('admin.settings.update');
-    Route::get('/admin/repertoires', [App\Http\Controllers\AdminController::class, 'repertoires'])->name('admin.repertoires.index');
-    Route::post('/admin/repertoires/{repertoire}/toggle-featured', [App\Http\Controllers\AdminController::class, 'toggleFeatured'])->name('admin.repertoires.toggle-featured');
-    Route::get('/admin/rankings', [App\Http\Controllers\AdminController::class, 'rankings'])->name('admin.rankings.index');
-    Route::get('/admin/export-users', [App\Http\Controllers\AdminController::class, 'exportUsers'])->name('admin.export.users');
+    // Public detail routes moved here to avoid conflict with 'create'
+    Route::get('/artists/{artist}', [ArtistController::class, 'show'])->name('artists.show');
+    Route::get('/songs/{song}', [SongController::class, 'show'])->name('songs.show');
+
 
     // Rota Temporária para se tornar Admin (Acesse uma vez para testar o painel)
     Route::get('/make-me-admin', function () {

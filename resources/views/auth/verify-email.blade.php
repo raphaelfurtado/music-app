@@ -1,31 +1,34 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-    </div>
+@extends('layouts.master')
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-        </div>
-    @endif
+@section('title', 'Verificar E-mail')
 
-    <div class="mt-4 flex items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
+@section('content')
+    <div class="flex flex-col justify-center min-h-[80vh] px-6 max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-on-surface mb-2">Verifique seu e-mail</h1>
+        <p class="mb-4 text-sm text-on-surface-variant">
+            Confirme seu endereço de e-mail clicando no link que enviamos. Se não recebeu, podemos reenviar.
+        </p>
 
-            <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
+        @if (session('status') == 'verification-link-sent')
+            <div class="mb-4 font-medium text-sm text-tertiary bg-tertiary/10 border border-tertiary/30 rounded-xl p-3">
+                Um novo link de verificação foi enviado para seu e-mail.
             </div>
-        </form>
+        @endif
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
+        <div class="mt-4 flex items-center justify-between gap-3">
+            <form method="POST" action="{{ route('verification.send') }}" class="flex-1">
+                @csrf
+                <button type="submit" class="w-full py-3 rounded-xl nm-gradient-gold text-on-primary-container font-bold text-xs uppercase tracking-[0.14em]">
+                    Reenviar verificação
+                </button>
+            </form>
 
-            <button type="submit" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                {{ __('Log Out') }}
-            </button>
-        </form>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="py-3 px-4 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors text-xs uppercase tracking-[0.14em] font-bold">
+                    Sair
+                </button>
+            </form>
+        </div>
     </div>
-</x-guest-layout>
+@endsection

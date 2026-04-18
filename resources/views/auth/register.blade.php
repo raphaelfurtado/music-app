@@ -1,61 +1,29 @@
-<!DOCTYPE html>
-<html class="dark" lang="pt-BR">
+@extends('layouts.master')
 
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Cadastro</title>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                        "surface-dark": "#1b2733",
-                        "surface-light": "#ffffff",
-                    },
-                    fontFamily: {
-                        "display": ["Plus Jakarta Sans", "sans-serif"]
-                    },
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            min-height: 100dvh;
-        }
-    </style>
-</head>
+@section('title', 'Cadastro')
 
-<body
-    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col">
+@section('content')
+    <div class="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center px-2 sm:px-6">
 
-    <header class="sticky top-0 z-20 px-4 py-3 flex items-center">
-        <a href="{{ url('/') }}"
-            class="flex items-center justify-center w-10 h-10 rounded-full text-slate-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
-            <span class="material-symbols-outlined">arrow_back</span>
-        </a>
-    </header>
+        <aside class="hidden lg:flex flex-col justify-between rounded-2xl nm-card p-10 min-h-[560px]">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4">Primeiro Acesso</p>
+                <h2 class="font-headline text-5xl leading-tight text-on-surface mb-4">Monte seu repertório como diretor musical.</h2>
+                <p class="text-on-surface-variant text-base leading-relaxed">No desktop você terá visão ampla para editar setlists, arrastar blocos e controlar o fluxo completo do show.</p>
+            </div>
+            <div class="rounded-xl bg-surface-container p-5 border border-outline-variant/20">
+                <p class="text-sm text-on-surface-variant">Cadastro rápido no mobile, controle total no desktop.</p>
+            </div>
+        </aside>
 
-    <main class="flex-1 w-full max-w-md mx-auto px-6 pb-8 flex flex-col justify-center">
+        <div class="w-full max-w-md mx-auto">
 
         <div class="mb-8 text-center sm:text-left">
             <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 text-primary mb-6">
                 <span class="material-symbols-outlined text-3xl">music_note</span>
             </div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Criar conta</h1>
-            <p class="text-gray-500 dark:text-gray-400 text-base">
+            <h1 class="text-3xl font-bold tracking-tight text-on-surface mb-2">Criar conta</h1>
+            <p class="text-on-surface-variant text-base">
                 Cadastre-se para organizar seus repertórios e blocos de músicas.
             </p>
         </div>
@@ -64,16 +32,16 @@
             @csrf
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1" for="name">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="name">
                     Nome completo
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">person</span>
                     </div>
                     <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
                         autocomplete="name"
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
                         placeholder="Seu nome" />
                 </div>
                 @error('name')
@@ -82,16 +50,16 @@
             </div>
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1" for="email">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="email">
                     E-mail
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">mail</span>
                     </div>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required
                         autocomplete="username"
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
                         placeholder="exemplo@email.com" />
                 </div>
                 @error('email')
@@ -100,18 +68,18 @@
             </div>
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1" for="password">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="password">
                     Senha
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">lock</span>
                     </div>
                     <input id="password" type="password" name="password" required autocomplete="new-password"
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
-                        placeholder="Mínimo 8 caracteres" />
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
+                        placeholder="Minimo 8 caracteres" />
                     <button type="button" onclick="togglePasswordVisibility('password')"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-primary">
                         <span class="material-symbols-outlined text-xl">visibility</span>
                     </button>
                 </div>
@@ -121,17 +89,16 @@
             </div>
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1"
-                    for="password_confirmation">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="password_confirmation">
                     Confirmar Senha
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">lock_reset</span>
                     </div>
                     <input id="password_confirmation" type="password" name="password_confirmation" required
                         autocomplete="new-password"
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
                         placeholder="Confirme a senha" />
                 </div>
             </div>
@@ -139,22 +106,20 @@
             <div class="flex items-start pt-2">
                 <div class="flex h-6 items-center">
                     <input id="terms" name="terms" type="checkbox" required
-                        class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary bg-white dark:bg-surface-dark dark:border-gray-600 dark:checked:bg-primary" />
+                        class="h-5 w-5 rounded border-outline-variant/40 text-primary focus:ring-primary bg-surface-container-low" />
                 </div>
                 <div class="ml-3 text-sm leading-6">
-                    <label class="font-medium text-gray-600 dark:text-gray-300" for="terms">
-                        Li e concordo com os <a
-                            class="font-semibold text-primary hover:text-blue-500 underline decoration-transparent hover:decoration-primary transition-all"
-                            href="#">Termos de Serviço</a> e Política de Privacidade.
+                    <label class="font-medium text-on-surface-variant" for="terms">
+                        Li e concordo com os <a class="font-semibold text-primary hover:text-primary/80 underline" href="#">Termos de Serviço</a> e Política de Privacidade.
                     </label>
                 </div>
             </div>
 
             <div class="pt-4">
                 <button type="submit"
-                    class="flex w-full justify-center items-center gap-2 rounded-2xl bg-primary px-3 py-4 text-base font-bold leading-6 text-white shadow-lg shadow-blue-500/25 hover:bg-blue-600 hover:shadow-blue-500/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all active:scale-[0.98]">
-                    Cadastrar
-                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    class="flex w-full justify-center items-center gap-2 rounded-2xl nm-gradient-gold px-3 py-4 text-base font-black leading-6 text-on-primary-container shadow-lg shadow-samba-gold/20 hover:brightness-110 transition-all active:scale-[0.98] uppercase tracking-widest italic leading-none">
+                    Começar o Show
+                    <span class="material-symbols-outlined text-xl font-black">arrow_forward</span>
                 </button>
             </div>
         </form>
@@ -162,11 +127,10 @@
         <div class="mt-6">
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                    <div class="w-full border-t border-outline-variant/30"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span
-                        class="px-2 bg-background-light dark:bg-background-dark text-gray-500 dark:text-gray-400 font-medium">
+                    <span class="px-2 bg-surface text-on-surface-variant font-medium">
                         Ou continue com
                     </span>
                 </div>
@@ -174,7 +138,7 @@
 
             <div class="mt-6">
                 <a href="{{ route('auth.google') }}"
-                    class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-surface-dark text-sm font-semibold text-slate-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-[0.98]">
+                    class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant/30 rounded-xl shadow-sm bg-surface-container-low text-sm font-semibold text-on-surface hover:bg-surface-container-high transition-all active:scale-[0.98]">
 
                     <svg class="h-5 w-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                         <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -193,13 +157,15 @@
             </div>
         </div>
 
-        <p class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-8 text-center text-sm text-on-surface-variant">
             Já tem uma conta?
-            <a href="{{ route('login') }}" class="font-bold leading-6 text-primary hover:text-blue-500 ml-1">
+            <a href="{{ route('login') }}" class="font-bold leading-6 text-primary hover:text-primary/80 ml-1">
                 Fazer login
             </a>
         </p>
-    </main>
+
+        </div>
+    </div>
 
     <script>
         function togglePasswordVisibility(id) {
@@ -211,6 +177,4 @@
             }
         }
     </script>
-</body>
-
-</html>
+@endsection

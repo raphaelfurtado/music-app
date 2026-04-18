@@ -23,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
         if (str_contains(config('app.url'), 'https://')) {
             URL::forceScheme('https');
         }
+
+        \Illuminate\Support\Facades\Gate::define('admin', function (\App\Models\User $user) {
+            return $user->is_admin === true || $user->is_admin === 1;
+        });
     }
 }

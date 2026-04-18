@@ -6,10 +6,10 @@
     <div class="px-4 py-6 md:px-8 md:py-10">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 italic tracking-tight">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-on-surface mb-2 italic tracking-tight">
                     Gestão de Usuários
                 </h1>
-                <p class="text-gray-500 dark:text-gray-400">Administre permissões e privilégios dos usuários da plataforma.</p>
+                <p class="text-on-surface-variant">Administre permissões e privilégios dos usuários da plataforma.</p>
             </div>
             <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium">
@@ -32,20 +32,20 @@
             </div>
         @endif
 
-        <div class="bg-dark-card border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="bg-surface-container-low border border-outline-variant/20 rounded-3xl overflow-hidden shadow-2xl">
             <!-- Desktop Table -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
-                        <tr class="bg-white/5 text-gray-400 text-xs uppercase tracking-widest">
+                        <tr class="bg-surface-container-high text-on-surface-variant text-xs uppercase tracking-widest">
                             <th class="px-8 py-4">Usuário</th>
                             <th class="px-8 py-4">Papéis</th>
                             <th class="px-8 py-4">Ações</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-white/5 text-sm">
+                    <tbody class="divide-y divide-outline-variant/20 text-sm">
                         @foreach ($users as $user)
-                            <tr class="hover:bg-white/[0.02] transition-colors">
+                            <tr class="hover:bg-surface-container-high/30 transition-colors">
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
                                         @if ($user->avatar)
@@ -56,20 +56,20 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="font-bold text-white">{{ $user->name }}</div>
-                                            <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                            <div class="font-bold text-on-surface">{{ $user->name }}</div>
+                                            <div class="text-xs text-on-surface-variant">{{ $user->email }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-8 py-5">
                                     <div class="flex flex-wrap gap-2">
                                         @if ($user->is_admin)
-                                            <span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-500 text-[10px] font-bold uppercase tracking-wider border border-purple-500/20">Admin</span>
+                                            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">Admin</span>
                                         @endif
                                         @if ($user->is_premium)
-                                            <span class="px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">Premium</span>
+                                            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">Premium</span>
                                         @else
-                                            <span class="px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-500 text-[10px] font-bold uppercase tracking-wider border border-gray-500/20 text-opacity-50">Free</span>
+                                            <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-bold uppercase tracking-wider border border-outline-variant/20 text-opacity-80">Free</span>
                                         @endif
                                     </div>
                                 </td>
@@ -77,7 +77,7 @@
                                     <div class="flex items-center gap-3">
                                         <form action="{{ route('admin.users.toggle-premium', $user) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-400/10 text-cyan-400 hover:bg-cyan-400/20 transition-colors text-xs font-bold whitespace-nowrap">
+                                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-bold whitespace-nowrap">
                                                 <span class="material-symbols-outlined text-sm">stars</span>
                                                 {{ $user->is_premium ? 'Remover Premium' : 'Tornar Premium' }}
                                             </button>
@@ -86,7 +86,7 @@
                                         @if($user->id !== auth()->id())
                                         <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 transition-colors text-xs font-bold whitespace-nowrap">
+                                            <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-bold whitespace-nowrap">
                                                 <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
                                                 {{ $user->is_admin ? 'Remover Admin' : 'Tornar Admin' }}
                                             </button>
@@ -101,7 +101,7 @@
             </div>
 
             <!-- Mobile List -->
-            <div class="md:hidden divide-y divide-white/5">
+            <div class="md:hidden divide-y divide-outline-variant/20">
                 @foreach ($users as $user)
                     <div class="px-6 py-6 transition-colors">
                         <div class="flex items-center gap-4 mb-4">
@@ -113,26 +113,26 @@
                                 </div>
                             @endif
                             <div>
-                                <div class="text-lg font-bold text-white leading-none mb-1">{{ $user->name }}</div>
-                                <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                <div class="text-lg font-bold text-on-surface leading-none mb-1">{{ $user->name }}</div>
+                                <div class="text-xs text-on-surface-variant">{{ $user->email }}</div>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-2 mb-6">
                             @if ($user->is_admin)
-                                <span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-500 text-[10px] font-bold uppercase tracking-wider border border-purple-500/20">Admin</span>
+                                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">Admin</span>
                             @endif
                             @if ($user->is_premium)
-                                <span class="px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 text-[10px] font-bold uppercase tracking-wider border border-cyan-400/20">Premium</span>
+                                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">Premium</span>
                             @else
-                                <span class="px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-500 text-[10px] font-bold uppercase tracking-wider border border-gray-500/20">Free</span>
+                                <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-bold uppercase tracking-wider border border-outline-variant/20">Free</span>
                             @endif
                         </div>
 
                         <div class="flex flex-col gap-3">
                             <form action="{{ route('admin.users.toggle-premium', $user) }}" method="POST" class="w-full">
                                 @csrf
-                                <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-cyan-400/10 text-cyan-400 active:scale-95 transition-transform text-sm font-bold border border-cyan-400/20">
+                                <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 text-primary active:scale-95 transition-transform text-sm font-bold border border-primary/20">
                                     <span class="material-symbols-outlined">stars</span>
                                     {{ $user->is_premium ? 'Remover Plano Premium' : 'Ativar Plano Premium' }}
                                 </button>
@@ -141,7 +141,7 @@
                             @if($user->id !== auth()->id())
                             <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" class="w-full">
                                 @csrf
-                                <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-purple-500/10 text-purple-500 active:scale-95 transition-transform text-sm font-bold border border-purple-500/20">
+                                <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-primary/10 text-primary active:scale-95 transition-transform text-sm font-bold border border-primary/20">
                                     <span class="material-symbols-outlined">shield_person</span>
                                     {{ $user->is_admin ? 'Remover Acesso Admin' : 'Conceder Acesso Admin' }}
                                 </button>

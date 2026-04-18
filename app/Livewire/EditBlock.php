@@ -18,11 +18,23 @@ class EditBlock extends Component
     // Controle da Lista e Busca
     public $search = '';
     public $addedSongs = [];
+    public $selectedArtist = null;
 
     protected $listeners = [
         'song-created' => 'addSong',
         'song-updated' => 'refreshSongList'
     ];
+
+    public function selectArtist($artistId)
+    {
+        $this->selectedArtist = $artistId;
+        $this->search = '';
+    }
+
+    public function clearArtist()
+    {
+        $this->selectedArtist = null;
+    }
 
     // Tons para os botões - MANTIDO para o bloco, não para música
     public $keys = [
@@ -135,14 +147,23 @@ class EditBlock extends Component
     // Propriedade computada para a busca
     public function getSearchResultsProperty()
     {
+        if ($this->selectedArtist) {
+            return Song::where('artist_id', $this->selectedArtist)
+                ->when($this->search, fn($q) => $q->where('title', 'like', '%' . $this->search . '%'))
+                ->take(10)
+                ->get();
+        }
+
         if (strlen($this->search) < 2)
             return [];
 
-        return Song::where('title', 'like', '%' . $this->search . '%')
-            // Se quiser filtrar apenas músicas do usuário ou globais:
-            // ->where(fn($q) => $q->where('user_id', auth()->id())->orWhereNull('user_id'))
-            ->take(5)
-            ->get();
+        return [
+            'artists' => \App\Models\Artist::where('name', 'like', '%' . $this->search . '%')->take(3)->get(),
+            'songs' => Song::where('title', 'like', '%' . $this->search . '%')
+                ->whereNull('artist_id')
+                ->take(5)
+                ->get()
+        ];
     }
 
     // Redirecionamento para criar música em outra tela (se ainda usar)

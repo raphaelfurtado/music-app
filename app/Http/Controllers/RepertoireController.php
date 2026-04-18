@@ -9,6 +9,13 @@ use Illuminate\Support\Str;
 
 class RepertoireController extends Controller
 {
+    private function ensureOwner(Repertoire $repertoire): void
+    {
+        if ($repertoire->user_id !== auth()->id()) {
+            abort(403);
+        }
+    }
+
     // Tela Inicial (Dashboard)
     public function index()
     {
@@ -52,9 +59,7 @@ class RepertoireController extends Controller
     public function show(Repertoire $repertoire)
     {
         // Segurança: Garante que o repertório pertence ao usuário
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
 
         // Carrega os blocos e conta as músicas de cada bloco para evitar N+1 queries
         $repertoire->load([
@@ -69,9 +74,7 @@ class RepertoireController extends Controller
     // Editar
     public function edit(Repertoire $repertoire)
     {
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
         return view('repertoires.edit', compact('repertoire'));
     }
 
@@ -79,9 +82,7 @@ class RepertoireController extends Controller
     public function update(Request $request, Repertoire $repertoire)
     {
         // 1. Verifique se o usuário é dono do repertório (Segurança)
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
 
         // 2. Validação dos dados
         $validated = $request->validate([
@@ -166,9 +167,7 @@ class RepertoireController extends Controller
     // Duplicar Repertório
     public function duplicate(Repertoire $repertoire)
     {
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
 
         // 1. Clona o Repertório
         $newRepertoire = $repertoire->replicate(['created_at', 'updated_at']);
@@ -206,9 +205,7 @@ class RepertoireController extends Controller
     // Deletar
     public function destroy(Repertoire $repertoire)
     {
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
 
         $repertoire->delete();
 
@@ -242,9 +239,7 @@ class RepertoireController extends Controller
      */
     public function togglePublic(Repertoire $repertoire)
     {
-        if ($repertoire->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->ensureOwner($repertoire);
 
         $repertoire->is_public = !$repertoire->is_public;
 
@@ -256,5 +251,49 @@ class RepertoireController extends Controller
 
         $message = $repertoire->is_public ? 'Link público gerado!' : 'Repertório agora é privado.';
         return back()->with('success', $message);
+    }
+
+    /**
+     * Inicia a contagem de um show em tempo real.
+     */
+    public function startShow(Repertoire $repertoire)
+    {
+        $this->ensureOwner($repertoire);
+
+        if ($repertoire->show_started_at) {
+            return back()->with('success', 'Show já está em andamento.');
+        }
+
+        $repertoire->update([
+            'show_started_at' => now(),
+        ]);
+
+        return back()->with('success', 'Show iniciado. Cronômetro em andamento!');
+    }
+
+    /**
+     * Encerra a contagem e salva a duração do show.
+     */
+    public function stopShow(Repertoire $repertoire)
+    {
+        $this->ensureOwner($repertoire);
+
+        if (!$repertoire->show_started_at) {
+            return back()->with('info', 'Nenhum show ativo para encerrar.');
+        }
+
+        $endedAt = now();
+        $durationSeconds = max(1, $repertoire->show_started_at->diffInSeconds($endedAt));
+
+        $repertoire->update([
+            'last_show_started_at' => $repertoire->show_started_at,
+            'last_show_ended_at' => $endedAt,
+            'last_show_duration_seconds' => $durationSeconds,
+            'total_show_duration_seconds' => ((int) $repertoire->total_show_duration_seconds) + $durationSeconds,
+            'total_shows' => ((int) $repertoire->total_shows) + 1,
+            'show_started_at' => null,
+        ]);
+
+        return back()->with('success', 'Show encerrado e tempo salvo com sucesso!');
     }
 }
