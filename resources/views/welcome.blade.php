@@ -18,7 +18,9 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#137fec",
+                        "primary": "#EAB308",
+                        "samba-gold": "#EAB308",
+                        "samba-green": "#15803d",
                         "dark-bg": "#0a0f14",
                         "dark-card": "#161e27",
                     },
@@ -61,41 +63,48 @@
 
         .feature-card:hover {
             transform: translateY(-8px);
-            border-color: #137fec;
-            box-shadow: 0 20px 40px -20px rgba(19, 127, 236, 0.3);
+            border-color: #EAB308;
+            box-shadow: 0 20px 40px -20px rgba(234, 179, 8, 0.3);
         }
 
         .hero-glow {
-            background: radial-gradient(circle at 50% 50%, rgba(19, 127, 236, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at 50% 50%, rgba(234, 179, 8, 0.1) 0%, transparent 50%);
+        }
+
+        .samba-text-gradient {
+            background: linear-gradient(to r, #EAB308, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
 
-<body class="bg-dark-bg text-white selection:bg-primary/30">
+<body class="bg-dark-bg text-white selection:bg-samba-gold/30">
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="flex items-center gap-3 group">
                 <div
-                    class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                    <span class="material-symbols-outlined text-white text-2xl">queue_music</span>
+                    class="w-10 h-10 rounded-xl bg-samba-gold flex items-center justify-center shadow-lg shadow-samba-gold/20 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-dark-bg text-2xl font-bold">music_note</span>
                 </div>
-                <span class="text-xl font-bold tracking-tight">MusicApp</span>
+                <span class="text-xl font-black tracking-tight uppercase italic">Samba<span
+                        class="text-samba-gold">App</span></span>
             </a>
 
             <div class="hidden md:flex items-center gap-8">
                 <a href="#features"
-                    class="text-sm font-medium text-gray-400 hover:text-white transition-colors">Funcionalidades</a>
-                <a href="#how-it-works"
-                    class="text-sm font-medium text-gray-400 hover:text-white transition-colors">Como Funciona</a>
+                    class="text-sm font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Funcionalidades</a>
+                <a href="#featured"
+                    class="text-sm font-bold text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Destaques</a>
             </div>
 
             <div class="flex items-center gap-4">
                 <a href="{{ route('login') }}"
-                    class="text-sm font-semibold hover:text-primary transition-colors px-4 py-2">Entrar</a>
+                    class="text-sm font-bold hover:text-samba-gold transition-colors px-4 py-2 uppercase tracking-widest">Entrar</a>
                 <a href="{{ route('register') }}"
-                    class="bg-primary hover:bg-blue-600 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95">
-                    Começar Agora
+                    class="bg-samba-gold hover:bg-yellow-500 px-6 py-3 rounded-xl text-sm font-black text-dark-bg transition-all shadow-lg shadow-samba-gold/20 hover:shadow-samba-gold/40 active:scale-95 uppercase tracking-widest">
+                    Criar Conta
                 </a>
             </div>
         </div>
@@ -104,35 +113,33 @@
     <!-- Hero Section -->
     <section class="relative pt-32 pb-20 overflow-hidden min-h-screen flex items-center">
         <div class="absolute inset-0 hero-glow"></div>
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 blur-[120px] rounded-full"></div>
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-samba-gold/10 blur-[120px] rounded-full"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-samba-green/10 blur-[120px] rounded-full"></div>
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
             <div
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
-                <span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-                <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">A revolução no seu palco</span>
+                <span class="flex h-2 w-2 rounded-full bg-samba-gold animate-pulse"></span>
+                <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">O Som da Nossa Terra</span>
             </div>
 
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
-                Domine seu <span
-                    class="bg-gradient-to-r from-primary to-cyan-400 bg-clip-text text-transparent animate-gradient">Repertório
-                    Musical</span>
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-8 leading-[1.0] uppercase italic">
+                Domine o seu Culto ao <span class="samba-text-gradient animate-gradient">Samba e Pagode</span>
             </h1>
 
             <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-                A ferramenta definitiva para músicos e bandas organizarem shows, gerenciarem setlists e focarem no que
-                realmente importa: a música.
+                A ferramenta definitiva para sambistas, pagodeiros e grupos organizarem seus shows, gerenciarem setlists
+                e focarem no balanço.
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('register') }}"
-                    class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-primary text-white font-extrabold text-lg shadow-2xl shadow-primary/30 hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center gap-2">
-                    Criar Minha Conta Grátis
-                    <span class="material-symbols-outlined">arrow_forward</span>
+                    class="w-full sm:w-auto px-10 py-5 rounded-2xl bg-samba-gold text-dark-bg font-black text-xl shadow-2xl shadow-samba-gold/30 hover:bg-yellow-500 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-tight italic">
+                    Cadastrar Meu Grupo
+                    <span class="material-symbols-outlined font-bold">arrow_forward</span>
                 </a>
                 <a href="#features"
-                    class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                    class="w-full sm:w-auto px-10 py-5 rounded-2xl bg-white/5 border border-white/10 font-bold text-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2 uppercase tracking-tight italic">
                     Ver Funcionalidades
                 </a>
             </div>

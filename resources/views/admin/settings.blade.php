@@ -6,10 +6,10 @@
     <div class="px-4 py-6 md:px-8 md:py-10">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 italic tracking-tight">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-on-surface mb-2 italic tracking-tight">
                     Configurações
                 </h1>
-                <p class="text-gray-500 dark:text-gray-400">Gerencie avisos globais e o status do sistema.</p>
+                <p class="text-on-surface-variant">Gerencie avisos globais e o status do sistema.</p>
             </div>
             <a href="{{ route('admin.dashboard') }}"
                 class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium">
@@ -29,33 +29,33 @@
             @csrf
 
             <!-- Global Notice Section -->
-            <div class="bg-dark-card border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <div class="bg-surface-container-low border border-outline-variant/20 rounded-3xl p-6 md:p-8 shadow-2xl">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                         <span class="material-symbols-outlined text-3xl">notification_important</span>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-white">Aviso Global</h2>
-                        <p class="text-xs text-gray-500 uppercase tracking-widest">Banner para todos os usuários</p>
+                        <h2 class="text-xl font-bold text-on-surface">Aviso Global</h2>
+                        <p class="text-xs text-on-surface-variant uppercase tracking-widest">Banner para todos os usuários</p>
                     </div>
                 </div>
 
                 <div class="space-y-6">
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Mensagem do
+                        <label class="block text-sm font-bold text-on-surface-variant mb-2 uppercase tracking-wider">Mensagem do
                             Aviso</label>
                         <textarea name="notice_message" rows="3"
-                            class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors placeholder-gray-600"
+                            class="w-full bg-surface-container-high border border-outline-variant/20 rounded-2xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-on-surface-variant/60"
                             placeholder="Ex: Teremos uma atualização hoje às 22h...">{{ $notices['message'] }}</textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Tipo de
+                            <label class="block text-sm font-bold text-on-surface-variant mb-2 uppercase tracking-wider">Tipo de
                                 Alerta</label>
                             <select name="notice_type"
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none">
-                                <option value="info" @selected($notices['type'] == 'info')>Informativo (Azul)</option>
+                                class="w-full bg-surface-container-high border border-outline-variant/20 rounded-2xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 transition-colors appearance-none">
+                                <option value="info" @selected($notices['type'] == 'info')>Informativo</option>
                                 <option value="success" @selected($notices['type'] == 'success')>Sucesso (Verde)</option>
                                 <option value="warning" @selected($notices['type'] == 'warning')>Aviso (Amarelo)</option>
                                 <option value="error" @selected($notices['type'] == 'error')>Crítico (Vermelho)</option>
@@ -63,15 +63,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Status do
+                            <label class="block text-sm font-bold text-on-surface-variant mb-2 uppercase tracking-wider">Status do
                                 Aviso</label>
                             <label class="relative inline-flex items-center cursor-pointer mt-2">
                                 <input type="checkbox" name="notice_active" value="1" class="sr-only peer"
                                     @checked($notices['active'] == '1')>
                                 <div
-                                    class="w-14 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary">
+                                    class="w-14 h-7 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-on-surface after:border-on-surface/20 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary">
                                 </div>
-                                <span class="ml-3 text-sm font-medium text-gray-300 uppercase tracking-widest">Ativo</span>
+                                <span class="ml-3 text-sm font-medium text-on-surface uppercase tracking-widest">Ativo</span>
                             </label>
                         </div>
                     </div>
@@ -79,28 +79,28 @@
             </div>
 
             <!-- System Status Section -->
-            <div class="bg-dark-card border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <div class="bg-surface-container-low border border-outline-variant/20 rounded-3xl p-6 md:p-8 shadow-2xl">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
                         <span class="material-symbols-outlined text-3xl">construction</span>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-white">Status do Sistema</h2>
-                        <p class="text-xs text-gray-500 uppercase tracking-widest">Controle de acessibilidade</p>
+                        <h2 class="text-xl font-bold text-on-surface">Status do Sistema</h2>
+                        <p class="text-xs text-on-surface-variant uppercase tracking-widest">Controle de acessibilidade</p>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between p-6 bg-red-500/5 border border-red-500/10 rounded-2xl">
                     <div class="max-w-md">
-                        <h4 class="font-bold text-white mb-1 uppercase tracking-tight">Modo Manutenção</h4>
-                        <p class="text-sm text-gray-400">Ao ativar, um aviso de manutenção será exibido para todos os
+                        <h4 class="font-bold text-on-surface mb-1 uppercase tracking-tight">Modo Manutenção</h4>
+                        <p class="text-sm text-on-surface-variant">Ao ativar, um aviso de manutenção será exibido para todos os
                             usuários não-admin.</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" name="maintenance_mode" value="1" class="sr-only peer"
                             @checked($maintenance == '1')>
                         <div
-                            class="w-14 h-7 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-500">
+                            class="w-14 h-7 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-on-surface after:border-on-surface/20 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-500">
                         </div>
                     </label>
                 </div>
@@ -108,7 +108,7 @@
 
             <div class="flex justify-end pt-4">
                 <button type="submit"
-                    class="w-full md:w-auto px-10 py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2">
+                    class="w-full md:w-auto px-10 py-4 nm-gradient-gold text-on-primary-container font-bold rounded-2xl hover:brightness-110 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">save</span>
                     Salvar Alterações
                 </button>

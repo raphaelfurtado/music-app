@@ -13,6 +13,7 @@ class CreateSongModal extends Component
     // Campos da Música
     public $title = '';
     public $artist = '';
+    public $artist_id = null;
     public $key = '';
     public $bpm = null;
     public $lyrics = '';
@@ -44,6 +45,7 @@ class CreateSongModal extends Component
         $this->editingSongId = $song->id;
         $this->title = $song->title;
         $this->artist = $song->artist;
+        $this->artist_id = $song->artist_id;
         $this->key = $song->key;
         $this->bpm = $song->bpm;
         $this->lyrics = $song->lyrics;
@@ -53,7 +55,7 @@ class CreateSongModal extends Component
 
     public function resetForm()
     {
-        $this->reset(['title', 'artist', 'key', 'bpm', 'lyrics', 'editingSongId', 'repertoire_id', 'block_id']);
+        $this->reset(['title', 'artist', 'artist_id', 'key', 'bpm', 'lyrics', 'editingSongId', 'repertoire_id', 'block_id']);
     }
 
     public function close()
@@ -67,6 +69,7 @@ class CreateSongModal extends Component
         $this->validate([
             'title' => 'required|min:2|string|max:255',
             'artist' => 'nullable|string|max:255',
+            'artist_id' => 'nullable|exists:artists,id',
             'key' => 'nullable|string',
             'bpm' => 'nullable|integer',
             'lyrics' => 'nullable|string',
@@ -79,6 +82,7 @@ class CreateSongModal extends Component
                 $song->update([
                     'title' => $this->title,
                     'artist' => $this->artist,
+                    'artist_id' => $this->artist_id,
                     'key' => $this->key,
                     'bpm' => $this->bpm,
                     'lyrics' => $this->lyrics,
@@ -94,6 +98,7 @@ class CreateSongModal extends Component
                 'repertoire_id' => $this->repertoire_id, // Se informado
                 'title' => $this->title,
                 'artist' => $this->artist,
+                'artist_id' => $this->artist_id,
                 'key' => $this->key,
                 'bpm' => $this->bpm,
                 'lyrics' => $this->lyrics,
@@ -108,6 +113,8 @@ class CreateSongModal extends Component
 
     public function render()
     {
-        return view('livewire.create-song-modal');
+        return view('livewire.create-song-modal', [
+            'artists' => \App\Models\Artist::orderBy('name')->get()
+        ]);
     }
 }

@@ -1,138 +1,122 @@
 @extends('layouts.master')
 
-@section('title', 'Detalhes da Música')
+@section('title', 'Adicionar Música | SambaApp')
 
 @section('content')
-    <div class="flex flex-col h-screen bg-background-light dark:bg-background-dark">
-        <header
-            class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
-            <a href="{{ request('return_url') ?? url()->previous() }}"
-                class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white">
-                <span class="material-symbols-outlined text-2xl">arrow_back</span>
-            </a>
-            <h1 class="text-lg font-bold tracking-tight">Detalhes da Música</h1>
-            <div class="w-8"></div>
-        </header>
+    <div class="max-w-3xl mx-auto py-12 pb-32">
+        <div class="mb-12">
+            <h1 class="text-4xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Adicionar <span
+                    class="text-samba-gold">Música</span></h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Cadastre uma nova cifra para a biblioteca global ou seu
+                repertório.</p>
+        </div>
 
-        <main class="flex-1 w-full max-w-md mx-auto px-4 py-6">
-            <form action="{{ route('songs.store') }}" method="POST" class="flex flex-col gap-6">
-                @csrf
+        <form action="{{ route('songs.store') }}" method="POST"
+            class="space-y-8 bg-white dark:bg-dark-card p-8 md:p-12 rounded-[3rem] shadow-xl ring-1 ring-gray-100 dark:ring-white/5">
+            @csrf
+            <input type="hidden" name="return_url" value="{{ request('return_url') }}">
 
-                <input type="hidden" name="return_url" value="{{ request('return_url') }}">
-
-                <div class="space-y-2">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songName">
-                        Nome da Música
-                    </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Title -->
+                <div class="space-y-2 md:col-span-2">
+                    <label for="title"
+                        class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Título da
+                        Música</label>
                     <div class="relative group">
-                        <input name="title" value="{{ old('title', $title) }}" required autofocus
-                            class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base transition-shadow"
-                            id="songName" placeholder="Ex: Oceano" type="text" />
-                        <div
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                            <span class="material-symbols-outlined">music_note</span>
-                        </div>
+                        <input type="text" name="title" id="title" value="{{ old('title', $title) }}" required autofocus
+                            class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-samba-gold transition-all"
+                            placeholder="Ex: Deixa Vida Me Levar">
+                        <span
+                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-samba-gold transition-colors">music_note</span>
                     </div>
-                    @error('title') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
+                    @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- Artist Selection -->
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songArtist">
-                        Artista
-                    </label>
+                    <label for="artist_id"
+                        class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Artista
+                        (Oficial)</label>
                     <div class="relative group">
-                        <input name="artist" value="{{ old('artist') }}"
-                            class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base transition-shadow"
-                            id="songArtist" placeholder="Ex: Djavan" type="text" />
-                        <div
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                            <span class="material-symbols-outlined">person</span>
-                        </div>
-                    </div>
-                    @error('artist') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="space-y-2 flex-1">
-                        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songKey">
-                            Tom
-                        </label>
-                        <div class="relative group">
-                            <input name="key" id="songKeyInput" readonly
-                                class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base transition-shadow cursor-default"
-                                placeholder="Selecione abaixo" type="text" />
-                        </div>
-                    </div>
-
-                    <div class="space-y-2 w-1/3">
-                        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="songBpm">
-                            BPM
-                        </label>
-                        <div class="relative group">
-                            <input name="bpm" type="number"
-                                class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base transition-shadow"
-                                placeholder="120" />
-                            <div
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400 text-xs font-bold">
-                                BPM
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-3 -mt-2">
-                    <div>
-                        <span class="text-[10px] uppercase font-bold text-gray-400 ml-1">Maiores</span>
-                        <div class="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-                            @foreach(['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'] as $k)
-                                <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
-                                    class="shrink-0 h-10 w-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark text-sm font-bold text-slate-700 dark:text-gray-200 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm">
-                                    {{ $k }}
-                                </button>
+                        <select name="artist_id" id="artist_id"
+                            class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-samba-gold transition-all appearance-none">
+                            <option value="">Selecione um artista...</option>
+                            @foreach($artists as $artist)
+                                <option value="{{ $artist->id }}" {{ old('artist_id') == $artist->id ? 'selected' : '' }}>
+                                    {{ $artist->name }}</option>
                             @endforeach
-                        </div>
+                        </select>
+                        <span
+                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">expand_more</span>
                     </div>
-
-                    <div>
-                        <span class="text-[10px] uppercase font-bold text-gray-400 ml-1">Menores</span>
-                        <div class="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-                            @foreach(['Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm'] as $k)
-                                <button type="button" onclick="document.getElementById('songKeyInput').value = '{{ $k }}'"
-                                    class="shrink-0 h-10 w-auto px-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-surface-dark/50 text-xs font-semibold text-slate-600 dark:text-gray-400 hover:border-primary hover:bg-primary hover:text-white dark:hover:bg-primary transition-all">
-                                    {{ $k }}
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
+                    <p class="text-[10px] text-gray-500 mt-1 uppercase font-bold">Músicas sem artista oficial ficarão como
+                        'Independente'.</p>
+                    @error('artist_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- Fallback Artist Name -->
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1" for="lyrics">
-                        Trecho da Letra / Observações
-                    </label>
+                    <label for="artist" class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Nome
+                        Manual (opcional)</label>
+                    <input type="text" name="artist" id="artist" value="{{ old('artist') }}"
+                        class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-samba-gold transition-all"
+                        placeholder="Djavan, SPC, etc.">
+                </div>
+
+                <!-- Key -->
+                <div class="space-y-2">
+                    <label for="key" class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Tom da
+                        Música</label>
                     <div class="relative group">
-                        <textarea name="lyrics"
-                            class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base resize-none transition-shadow"
-                            id="lyrics" placeholder="Adicione a primeira estrofe ou observações..." rows="6"></textarea>
-                        <div
-                            class="absolute top-3 right-4 pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
-                            <span class="material-symbols-outlined">notes</span>
-                        </div>
+                        <select name="key" id="key"
+                            class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-samba-gold transition-all appearance-none">
+                            <option value="">Selecione o tom...</option>
+                            @foreach(['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm'] as $k)
+                                <option value="{{ $k }}" {{ old('key') == $k ? 'selected' : '' }}>{{ $k }}</option>
+                            @endforeach
+                        </select>
+                        <span
+                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">piano</span>
                     </div>
                 </div>
 
-                <div class="flex flex-col-reverse gap-3 pt-6 sm:flex-row pb-10">
-                    <a href="{{ request('return_url') ?? url()->previous() }}"
-                        class="flex-1 py-4 rounded-xl font-bold text-gray-600 dark:text-gray-300 bg-transparent border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-[0.98] transition-all text-center flex items-center justify-center">
-                        Cancelar
-                    </a>
-                    <button type="submit"
-                        class="flex-1 py-4 rounded-xl font-bold text-white bg-primary shadow-lg shadow-blue-500/30 hover:bg-blue-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-xl">save</span>
-                        Salvar
-                    </button>
+                <!-- BPM -->
+                <div class="space-y-2">
+                    <label for="bpm"
+                        class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Andamento
+                        (BPM)</label>
+                    <div class="relative group">
+                        <input type="number" name="bpm" id="bpm" value="{{ old('bpm') }}"
+                            class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-samba-gold transition-all"
+                            placeholder="Ex: 95">
+                        <span
+                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">speed</span>
+                    </div>
                 </div>
-            </form>
-        </main>
+
+                <!-- Lyrics -->
+                <div class="space-y-2 md:col-span-2">
+                    <label for="lyrics"
+                        class="block text-sm font-black uppercase tracking-widest text-gray-400 italic">Cifra /
+                        Letra</label>
+                    <textarea name="lyrics" id="lyrics" rows="10"
+                        class="w-full bg-gray-50 dark:bg-white/5 border-none ring-1 ring-gray-200 dark:ring-white/10 rounded-[2rem] py-6 px-8 focus:ring-2 focus:ring-samba-gold transition-all font-mono text-sm"
+                        placeholder="Cole aqui a cifra ou letra da música..."></textarea>
+                    @error('lyrics') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-gray-100 dark:border-white/5 flex flex-col sm:flex-row gap-4">
+                <a href="{{ request('return_url') ?? url()->previous() }}"
+                    class="flex-1 py-5 text-center font-black uppercase tracking-widest italic text-gray-400 hover:text-white transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit"
+                    class="flex-[2] py-5 bg-samba-gold text-dark-bg font-black rounded-2xl hover:bg-yellow-500 transition-all shadow-xl shadow-samba-gold/20 uppercase tracking-widest italic flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined font-bold">save</span>
+                    Salvar Música
+                </button>
+            </div>
+        </form>
     </div>
 @endsection

@@ -3,83 +3,81 @@
 @section('title', 'Editar Repertório')
 
 @section('content')
-    <div class="flex flex-col h-screen bg-background-light dark:bg-background-dark">
-
-        <header
-            class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('repertoires.show', $repertoire->id) }}"
-                    class="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white">
-                    <span class="material-symbols-outlined text-2xl">arrow_back</span>
-                </a>
-                <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Editar Repertório</h1>
+    <div class="max-w-3xl mx-auto py-10 pb-24">
+        <div class="mb-10 flex items-center justify-between gap-4">
+            <div>
+                <h1 class="text-4xl font-headline text-on-surface">Editar Repertório</h1>
+                <p class="text-on-surface-variant text-sm mt-1">Ajuste detalhes sem perder a identidade visual.</p>
             </div>
-        </header>
+            <a href="{{ route('repertoires.show', $repertoire->id) }}"
+                class="inline-flex items-center gap-1 px-3 py-2 rounded-md bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-base">arrow_back</span>
+                Voltar
+            </a>
+        </div>
 
-        <main class="flex-1 w-full max-w-md mx-auto px-4 py-6">
-
-            <form action="{{ route('repertoires.update', $repertoire->id) }}" method="POST" class="flex flex-col gap-6">
+        <form action="{{ route('repertoires.update', $repertoire->id) }}" method="POST"
+            class="space-y-7 bg-surface-container-low p-6 md:p-8 rounded-xl nm-shadow">
                 @csrf
                 @method('PUT')
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant ml-1">
                         Nome do Evento
                     </label>
                     <input name="name" value="{{ old('name', $repertoire->name) }}" required
-                        class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base"
+                        class="block w-full px-4 py-3.5 rounded-lg border-none bg-surface-container-high text-on-surface placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary focus:outline-none"
                         placeholder="Ex: Casamento da Júlia" type="text" />
                     @error('name') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant ml-1">
                         Descrição / Observações
                     </label>
                     <textarea name="description" rows="4"
-                        class="block w-full px-4 py-3.5 rounded-2xl border-none bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-base resize-none"
+                        class="block w-full px-4 py-3.5 rounded-lg border-none bg-surface-container-high text-on-surface placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-primary focus:outline-none resize-none"
                         placeholder="Ex: Chegar 1 hora antes. Traje esporte fino.">{{ old('description', $repertoire->description) }}</textarea>
                     @error('description') <span class="text-red-500 text-xs ml-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="space-y-4">
-                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant ml-1">
                         Visibilidade
                     </label>
                     <div
-                        class="flex items-center justify-between p-4 bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-transparent">
+                        class="flex items-center justify-between p-4 bg-surface-container-high rounded-lg border border-outline-variant/20">
                         <div class="flex items-center gap-3">
                             <div
-                                class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                                class="w-10 h-10 rounded-md bg-tertiary/15 flex items-center justify-center text-tertiary">
                                 <span class="material-symbols-outlined">public</span>
                             </div>
                             <div>
-                                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Tornar Público</h4>
-                                <p class="text-[11px] text-gray-500">Permite compartilhar via link público.</p>
+                                <h4 class="text-sm font-bold text-on-surface">Tornar Público</h4>
+                                <p class="text-[11px] text-on-surface-variant">Permite compartilhar via link público.</p>
                             </div>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="is_public" value="1" class="sr-only peer" @checked(old('is_public', $repertoire->is_public))>
                             <div
-                                class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                                class="w-11 h-6 bg-surface-container-lowest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:border-on-surface/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
                             </div>
                         </label>
                     </div>
                 </div>
 
-                <div class="flex flex-col-reverse gap-3 pt-6 sm:flex-row pb-10">
+                <div class="pt-4 border-t border-outline-variant/20 flex gap-3">
                     <a href="{{ route('repertoires.show', $repertoire->id) }}"
-                        class="flex-1 py-4 rounded-xl font-bold text-gray-600 dark:text-gray-300 bg-transparent border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-center flex items-center justify-center">
+                        class="flex-1 py-4 rounded-md bg-surface-container-high text-center text-on-surface-variant hover:text-on-surface transition-colors">
                         Cancelar
                     </a>
                     <button type="submit"
-                        class="flex-1 py-4 rounded-xl font-bold text-white bg-primary shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-all flex items-center justify-center gap-2">
+                        class="flex-[2] py-4 rounded-md font-bold uppercase tracking-[0.14em] text-on-primary-container nm-gradient-gold hover:brightness-110 transition-all flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-xl">save</span>
-                        Salvar
+                        Salvar alterações
                     </button>
                 </div>
 
-            </form>
-        </main>
+        </form>
     </div>
 @endsection

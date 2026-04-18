@@ -3,16 +3,30 @@
 @section('title', 'Entrar')
 
 @section('content')
-    <div class="flex flex-col justify-center min-h-[80vh] px-6">
+    <div class="min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center px-2 sm:px-6">
+
+        <aside class="hidden lg:flex flex-col justify-between rounded-2xl nm-card p-10 min-h-[560px]">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-primary font-bold mb-4">Music App</p>
+                <h2 class="font-headline text-5xl leading-tight text-on-surface mb-4">Seu palco começa no planejamento.</h2>
+                <p class="text-on-surface-variant text-base leading-relaxed">No desktop, acompanhe repertórios, blocos e estatísticas com mais contexto visual em uma experiência de painel.</p>
+            </div>
+            <div class="rounded-xl bg-surface-container p-5 border border-outline-variant/20">
+                <p class="text-sm text-on-surface-variant">"Organização boa é ensaio que rende."</p>
+            </div>
+        </aside>
+
+        <div class="w-full max-w-md mx-auto">
 
         <div class="text-center mb-10">
             <div
-                class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary shadow-lg shadow-blue-500/30 mb-6 text-white">
-                <span class="material-symbols-outlined text-4xl">queue_music</span>
+                class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-samba-gold shadow-xl shadow-samba-gold/20 mb-6 text-dark-bg transition-transform hover:scale-110">
+                <span class="material-symbols-outlined text-4xl font-black">music_note</span>
             </div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Bem-vindo</h1>
-            <p class="text-gray-500 dark:text-gray-400 text-base">
-                Entre para gerenciar seus repertórios e shows
+            <h1 class="text-4xl font-black tracking-tighter text-on-surface mb-2 uppercase italic">Bem-<span
+                    class="text-samba-gold">vindo</span></h1>
+            <p class="text-on-surface-variant text-lg">
+                Entre para dominar o seu repertório.
             </p>
         </div>
 
@@ -36,15 +50,15 @@
             @csrf
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1" for="email">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="email">
                     E-mail ou Usuário
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">person</span>
                     </div>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
                         placeholder="seu@email.com" />
                 </div>
                 @error('email')
@@ -53,19 +67,19 @@
             </div>
 
             <div class="space-y-1.5">
-                <label class="block text-sm font-semibold text-slate-900 dark:text-gray-200 ml-1" for="password">
+                <label class="block text-sm font-semibold text-on-surface ml-1" for="password">
                     Senha
                 </label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                         <span class="material-symbols-outlined text-xl">lock</span>
                     </div>
                     <input id="password" type="password" name="password" required autocomplete="current-password"
-                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-slate-900 shadow-sm ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-white dark:bg-surface-dark dark:text-white transition-shadow"
+                        class="block w-full rounded-xl border-0 py-3.5 pl-11 pr-10 text-on-surface shadow-sm ring-1 ring-inset ring-outline-variant/30 placeholder:text-on-surface-variant/70 focus:ring-2 focus:ring-inset focus:ring-primary text-base bg-surface-container-low transition-shadow"
                         placeholder="••••••••" />
 
                     <button type="button" onclick="togglePassword()"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-primary">
                         <span class="material-symbols-outlined text-xl">visibility</span>
                     </button>
                 </div>
@@ -75,7 +89,7 @@
 
                 <div class="flex justify-end pt-1">
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-xs font-bold text-primary hover:text-blue-500">
+                        <a href="{{ route('password.request') }}" class="text-xs font-bold text-primary hover:text-primary/80">
                             Esqueceu a senha?
                         </a>
                     @endif
@@ -83,18 +97,18 @@
             </div>
 
             <button type="submit"
-                class="w-full py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-lg shadow-blue-500/30 hover:bg-blue-600 active:scale-[0.98] transition-all flex items-center justify-center">
-                Entrar
+                class="w-full py-5 rounded-2xl bg-samba-gold text-dark-bg font-black text-lg shadow-xl shadow-samba-gold/20 hover:bg-yellow-500 active:scale-[0.98] transition-all flex items-center justify-center uppercase tracking-widest italic leading-none">
+                Entrar no Palco
             </button>
         </form>
 
         <div class="mt-6">
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                    <div class="w-full border-t border-outline-variant/30"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-white dark:bg-background-dark text-gray-500 dark:text-gray-400">
+                    <span class="px-2 bg-surface text-on-surface-variant">
                         Ou continue com
                     </span>
                 </div>
@@ -102,7 +116,7 @@
 
             <div class="mt-6">
                 <a href="{{ route('auth.google') }}"
-                    class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl shadow-sm bg-white dark:bg-surface-dark text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant/30 rounded-xl shadow-sm bg-surface-container-low text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors">
 
                     <svg class="h-5 w-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                         <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -119,6 +133,8 @@
                     <span>Entrar com Google</span>
                 </a>
             </div>
+        </div>
+
         </div>
 
     </div>
