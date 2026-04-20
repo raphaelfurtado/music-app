@@ -115,7 +115,7 @@
             </div>
 
             <div class="mt-6">
-                <a href="{{ route('auth.google') }}"
+                <button type="button" onclick="openGoogleAuthPopup()"
                     class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant/30 rounded-xl shadow-sm bg-surface-container-low text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors">
 
                     <svg class="h-5 w-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
@@ -131,7 +131,7 @@
                         </g>
                     </svg>
                     <span>Entrar com Google</span>
-                </a>
+                </button>
             </div>
         </div>
 
@@ -144,5 +144,38 @@
             var input = document.getElementById("password");
             input.type = (input.type === "password") ? "text" : "password";
         }
+
+        function openGoogleAuthPopup() {
+            var url = "{{ route('auth.google', ['popup' => 1]) }}";
+            var width = 520;
+            var height = 680;
+            var left = Math.max(0, (window.screen.width - width) / 2);
+            var top = Math.max(0, (window.screen.height - height) / 2);
+            var features = "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",resizable=yes,scrollbars=yes";
+
+            var popup = window.open(url, "googleLoginPopup", features);
+
+            if (!popup) {
+                window.location.href = url;
+            }
+        }
+
+        window.addEventListener("message", function (event) {
+            if (event.origin !== window.location.origin) {
+                return;
+            }
+
+            var data = event.data || {};
+            if (data.type !== "google-auth-callback") {
+                return;
+            }
+
+            if (data.success) {
+                window.location.href = data.redirectUrl;
+                return;
+            }
+
+            window.location.href = "{{ route('login') }}";
+        });
     </script>
 @endsection

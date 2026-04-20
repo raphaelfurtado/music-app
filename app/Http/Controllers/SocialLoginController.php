@@ -11,16 +11,34 @@ use Illuminate\Support\Str;
 class SocialLoginController extends Controller
 {
     // 1. Redireciona o usuário para o Google
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
-        return Socialite::driver('google')->redirect();
+        if ($request->boolean('popup')) {
+            session(['google_login_popup' => true]);
+        }
+
+        $provider = Socialite::driver('google');
+        if (method_exists($provider, 'stateless')) {
+            $provider = $provider->stateless();
+        }
+
+        return $provider
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     // 2. Recebe o retorno do Google
     public function handleGoogleCallback()
     {
+        $isPopupFlow = session()->pull('google_login_popup', false);
+
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $provider = Socialite::driver('google');
+            if (method_exists($provider, 'stateless')) {
+                $provider = $provider->stateless();
+            }
+
+            $googleUser = $provider->user();
             
             // Verifica se já existe pelo ID do Google
             $user = User::where('google_id', $googleUser->id)->first();
@@ -50,9 +68,25 @@ class SocialLoginController extends Controller
             // Realiza o Login
             Auth::login($user);
 
+            if ($isPopupFlow) {
+                return view('auth.social-popup-callback', [
+                    'success' => true,
+                    'redirectUrl' => route('dashboard'),
+                    'message' => 'Login realizado com sucesso.'
+                ]);
+            }
+
             return redirect()->route('dashboard'); // Ou para onde desejar
 
         } catch (\Exception $e) {
+            if ($isPopupFlow) {
+                return view('auth.social-popup-callback', [
+                    'success' => false,
+                    'redirectUrl' => route('login'),
+                    'message' => 'Erro ao logar com Google.'
+                ]);
+            }
+
             return redirect()->route('login')->with('error', 'Erro ao logar com Google.');
         }
     }
