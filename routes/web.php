@@ -39,8 +39,7 @@ Route::get('/rodar-migrations-secreto', function () {
     }
 });
 
-Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
+Route::post('/auth/google/token', [SocialLoginController::class, 'loginWithGoogleToken'])->name('auth.google.token');
 
 // 1. PÁGINA INICIAL (Pública)
 // Essa rota carrega o arquivo 'resources/views/welcome.blade.php' (seu code 1.html)

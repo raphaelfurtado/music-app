@@ -115,23 +115,8 @@
             </div>
 
             <div class="mt-6">
-                <button type="button" onclick="openGoogleAuthPopup()"
-                    class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant/30 rounded-xl shadow-sm bg-surface-container-low text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors">
-
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                        <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
-                            <path fill="#4285F4"
-                                d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z" />
-                            <path fill="#34A853"
-                                d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z" />
-                            <path fill="#FBBC05"
-                                d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z" />
-                            <path fill="#EA4335"
-                                d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z" />
-                        </g>
-                    </svg>
-                    <span>Entrar com Google</span>
-                </button>
+                <div id="google-signin-button" class="w-full flex justify-center"></div>
+                <p id="google-signin-error" class="text-red-500 text-xs mt-2 text-center hidden"></p>
             </div>
         </div>
 
@@ -139,43 +124,105 @@
 
     </div>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         function togglePassword() {
             var input = document.getElementById("password");
             input.type = (input.type === "password") ? "text" : "password";
         }
 
-        function openGoogleAuthPopup() {
-            var url = "{{ route('auth.google', ['popup' => 1]) }}";
-            var width = 520;
-            var height = 680;
-            var left = Math.max(0, (window.screen.width - width) / 2);
-            var top = Math.max(0, (window.screen.height - height) / 2);
-            var features = "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",resizable=yes,scrollbars=yes";
+        function showGoogleSignInError(message) {
+            var errorEl = document.getElementById("google-signin-error");
+            if (!errorEl) {
+                return;
+            }
 
-            var popup = window.open(url, "googleLoginPopup", features);
+            errorEl.textContent = message;
+            errorEl.classList.remove("hidden");
+        }
 
-            if (!popup) {
-                window.location.href = url;
+        async function handleGoogleCredentialResponse(response) {
+            if (!response || !response.credential) {
+                showGoogleSignInError("Nao foi possivel autenticar com Google.");
+                return;
+            }
+
+            try {
+                var result = await fetch("{{ route('auth.google.token') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        credential: response.credential
+                    })
+                });
+
+                var data = await result.json();
+                if (!result.ok) {
+                    throw new Error(data.message || "Falha no login Google.");
+                }
+
+                window.location.href = data.redirect || "{{ route('dashboard') }}";
+            } catch (error) {
+                showGoogleSignInError(error.message || "Erro ao entrar com Google.");
             }
         }
 
-        window.addEventListener("message", function (event) {
-            if (event.origin !== window.location.origin) {
+        function initGoogleIdentity() {
+            if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+                showGoogleSignInError("Google Identity nao carregou. Tente atualizar a pagina.");
                 return;
             }
 
-            var data = event.data || {};
-            if (data.type !== "google-auth-callback") {
+            var clientId = "{{ config('services.google.client_id') }}";
+            if (!clientId) {
+                showGoogleSignInError("Google Client ID nao configurado.");
                 return;
             }
 
-            if (data.success) {
-                window.location.href = data.redirectUrl;
-                return;
-            }
+            google.accounts.id.initialize({
+                client_id: clientId,
+                callback: handleGoogleCredentialResponse,
+                ux_mode: "popup",
+                auto_select: false,
+                context: "signin"
+            });
 
-            window.location.href = "{{ route('login') }}";
+            google.accounts.id.renderButton(
+                document.getElementById("google-signin-button"),
+                {
+                    type: "standard",
+                    theme: "outline",
+                    size: "large",
+                    text: "continue_with",
+                    shape: "pill",
+                    logo_alignment: "left"
+                }
+            );
+
+            google.accounts.id.prompt();
+        }
+
+        window.addEventListener("load", function () {
+            var tries = 0;
+            var maxTries = 20;
+            var timer = setInterval(function () {
+                tries += 1;
+                if (window.google && window.google.accounts && window.google.accounts.id) {
+                    clearInterval(timer);
+                    initGoogleIdentity();
+                    return;
+                }
+
+                if (tries >= maxTries) {
+                    clearInterval(timer);
+                    showGoogleSignInError("Google Identity indisponivel no momento.");
+                }
+            }, 150);
         });
     </script>
 @endsection
